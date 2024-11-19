@@ -69,7 +69,8 @@ def get_invoice_number(request,numeroPnr):
     ).values_list('invoice_number', flat=True).distinct()
 
     # Récupérer les motifs uniques
-    unique_motif_ids = MotifPnr.objects.values('id', 'designation')
+    unique_motif_ids = MotifPnr.objects.exclude(id=1).values('id', 'designation')
+
 
     # Structurer les données
     unique_invoice_numbers_list = list(unique_invoice_numbers)
