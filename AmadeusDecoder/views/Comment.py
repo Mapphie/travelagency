@@ -64,10 +64,7 @@ def comment(request):
         [
             "pp@phidia.onmicrosoft.com",
             "tahina@phidia.onmicrosoft.com",
-            "alain@phidia.onmicrosoft.com",
             "maphiesarobidy@outlook.fr",
-            "naval@phidia.onmicrosoft.com",
-            "olyviahasina.razakamanantsoa@outlook.fr",
         ],
          subject,
          message
@@ -141,11 +138,8 @@ def comment_detail(request, comment_id):
                 [   
                     comments.user_id.email,
                     "maphiesarobidy@outlook.fr",
-                    "naval@phidia.onmicrosoft.com",
-                    "alain@phidia.onmicrosoft.com",
-                    "olyviahasina.razakamanantsoa@outlook.fr",
                     "pp@phidia.onmicrosoft.com",
-                    "tahina@phidia.onmicrosoft.com"
+                    "tahina@phidia.onmicrosoft.com",
                 ],
                 subject,
                 message
@@ -206,11 +200,8 @@ def get_pnr_not_fetched(request):
                 "anomalie.issoufali.pnr@gmail.com",
                 [
                     "maphiesarobidy@outlook.fr",
-                    "naval@phidia.onmicrosoft.com",
-                    "alain@phidia.onmicrosoft.com",
-                    "olyviahasina.razakamanantsoa@outlook.fr",
                     "pp@phidia.onmicrosoft.com",
-                    "tahina@phidia.onmicrosoft.com"
+                    "tahina@phidia.onmicrosoft.com",
                 ],
                 subject,
                 message
@@ -246,35 +237,29 @@ def verif_ticket(request):
     if request.method == 'POST':
         ticket_number = request.POST.get('ticket_number')
         pnr_id = request.POST.get('pnr_id')
-        print('PNR ID : ',pnr_id)
         ticket = Ticket.objects.filter(number=ticket_number).first()
-        print('ticket PNR ID : ',ticket.pnr.id)
-        verif = 'False'
+        
+        response = {'verif': 'False'}
+        
         if ticket is not None:
-            if ticket.pnr.id == int(pnr_id):
-                print('------------------- GÜNAYDIN --------------------------')
-                if ticket.is_no_adc == False:
-                    verif={
-                        'exist' : True,
-                        'ticket_cost' : ticket.transport_cost,
-                        'ticket_tax' : ticket.tax
-                    }
-
-                if ticket.is_no_adc == True and ticket.total != 0:
-                    verif= 'is_no_adc'
-                if ticket.is_no_adc == True and ticket.total == 0:
-                    verif= 'is_no_adc'
-            # ticket existant mais pour un autre pnr
+            if int(ticket.pnr_id) == int(pnr_id):
+                if ticket.is_no_adc:
+                    response['verif'] = 'is_no_adc'
+                elif ticket.total > 0 and ticket.ticket_status == 1:
+                    response['verif'] = 'ticket_already_exist'
+                else:
+                    response['verif'] = 'True'
             else:
-                print('--------------------------- GUTTEN MORGEN -----------------------------')
-                verif = {
-                    'exist': False,
+                response['verif'] = {
+                    'exist': True,
                     'pnr': ticket.pnr.number,
                 }
+        else:
+            response['verif'] = 'False'
 
-
-        
-    return JsonResponse({'verif': verif})
+        return JsonResponse(response)
+    else:
+        return JsonResponse({'error': 'Invalid request'})
 
 # get by pnr
 @login_required(login_url='index')
@@ -450,6 +435,9 @@ def update_ticket(request):
             ticket.transport_cost = anomalie.infos.get('montant')
             ticket.tax = anomalie.infos.get('taxe')
             ticket.total = float(anomalie.infos.get('montant')) + float(anomalie.infos.get('taxe'))
+            # set is_no_adc if total = 0
+            if ticket.total == 0:
+                ticket.is_no_adc = True
             ticket.ticket_status = 1
             ticket.emitter = None
             ticket.issuing_date = datetime.now()
@@ -462,6 +450,9 @@ def update_ticket(request):
             ticket.number=anomalie.infos.get('ticket_number')
             ticket.tax=anomalie.infos.get('taxe')
             ticket.total = float(anomalie.infos.get('montant')) + float(anomalie.infos.get('taxe'))
+            # set is_no_adc if total = 0
+            if ticket.total == 0:
+                ticket.is_no_adc = True
             ticket.ticket_status=1
             ticket.pnr_id=anomalie.pnr_id
             ticket.passenger_id=anomalie.infos.get('passenger_id')

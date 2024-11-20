@@ -186,7 +186,7 @@ def delete_all_files_in_attachments_dir():
     print("*-- Deletes all files and directories recursively in the attachments directory --*")
     
     # Define the path to the attachments directory
-    attachments_dir = os.path.join("opt", "travelagency", "EmailFetcher", "utilities", "attachments_dir")
+    attachments_dir = os.path.join("/", "opt", "travelagency", "EmailFetcher", "utilities", "attachments_dir")
     
     # Iterate over all items (files and directories) in the attachments directory
     for item in os.scandir(attachments_dir):
@@ -228,8 +228,8 @@ class EmailfetcherConfig(AppConfig):
         now = datetime.now()
         repeat_timer_for_pnr_upload_notification = 0
         
-        # Delete all files in attachments every 5 minutes 
-        task_schedule = RepeatTimer(5 * 60, delete_all_files_in_attachments_dir)
+        # Delete all files in attachments every 1 minutes 
+        task_schedule = RepeatTimer(1 * 60, delete_all_files_in_attachments_dir)
         task_schedule.start()
         
         def pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification):
@@ -257,9 +257,9 @@ class EmailfetcherConfig(AppConfig):
         timer_passenger_segment_missing = RepeatTimer(1, checking_passenger_segment_missing)
         timer_passenger_segment_missing.start()
 
-        print('Daily Pnr created starting')
-        timer_schedule = RepeatTimer(60, start_pnr_daily_report_schedule)
-        timer_schedule.start()
+        # print('Daily Pnr created starting')
+        # timer_schedule = RepeatTimer(60, start_pnr_daily_report_schedule)
+        # timer_schedule.start()
 
         print('Pnr unissued OPC checking is running...')
         timer = RepeatTimer(60, pnr_unissued_opc_checking)  
