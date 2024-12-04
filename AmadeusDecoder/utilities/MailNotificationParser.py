@@ -65,12 +65,12 @@ class MailNotification():
                 if pnr.agent is not None:
                     recipients = [pnr.agent.email, "maphiesarobidy@outlook.fr"]
 
-                Sending.send_email(
-                        "issoufali.pnr@outlook.com",
-                        recipients,
-                        subject,
-                        message
-                    )
+                # Sending.send_email(
+                #         "issoufali.pnr@outlook.com",
+                #         recipients,
+                #         subject,
+                #         message
+                #     )
 
     def pnr_missing_notification(time_now):
         pnr_missing = Pnr.objects.filter(system_creation_date = (time_now - timedelta(minutes=1)), state = 1)
@@ -100,12 +100,12 @@ class MailNotification():
 
                 if pnr.agent_id is not None:
                     recipient = [pnr.agent_id.email,  "tahina@phidia.onmicrosoft.com", "maphiesarobidy@outlook.fr"]
-                Sending.send_email(
-                        "issoufali.pnr@outlook.com",
-                        recipient,
-                        subject,
-                        message
-                    )
+                # Sending.send_email(
+                #         "issoufali.pnr@outlook.com",
+                #         recipient,
+                #         subject,
+                #         message
+                #     )
 
     def pnr_upload_notification(now):
         def weekend_processing_time(minutes):
@@ -155,16 +155,16 @@ class MailNotification():
                             """
 
                     try:
-                        Sending.send_email(
-                            "issoufali.pnr@outlook.com",
-                            [
-                                "pp@phidia.onmicrosoft.com",
-                                "tahina@phidia.onmicrosoft.com",
-                                "maphiesarobidy@outlook.fr"
-                            ],
-                            subject,
-                            message
-                        )
+                        # Sending.send_email(
+                        #     "issoufali.pnr@outlook.com",
+                        #     [
+                        #         "pp@phidia.onmicrosoft.com",
+                        #         "tahina@phidia.onmicrosoft.com",
+                        #         "maphiesarobidy@outlook.fr"
+                        #     ],
+                        #     subject,
+                        #     message
+                        # )
                     except Exception as e:
                         print(f"Error sending pnr not sent to GP : {e}")
                         raise e
@@ -816,10 +816,10 @@ class MailNotification():
                 """
 
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
-                Sending.send_email(
-                    ANOMALY_EMAIL_SENDER["address"], 
-                    administrator_users_mail + mgbi_users_mail,
-                    subject, 
-                    message
-                )
+                # Sending.send_email(
+                #     ANOMALY_EMAIL_SENDER["address"], 
+                #     administrator_users_mail + mgbi_users_mail,
+                #     subject, 
+                #     message
+                # )
                 print("EMAIL ENVOYE")
