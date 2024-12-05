@@ -223,6 +223,9 @@ def home(request):
         'users': users,
         'search_query': search_query,
     }
+    pnr_not_invoiced = get_ticket_created_today_not_invoiced(request)
+    context['pnr_not_invoiced'] = pnr_not_invoiced
+    context['notif_number'] = len(pnr_not_invoiced)
 
     return render(request, 'home.html', context)
 
@@ -257,7 +260,10 @@ def pnr_details(request, pnr_id):
     context['responses'] = Response.objects.filter(pnr_id=pnr_id)
     context['products'] = Product.objects.all()
     context['raw_data'] = pnr_detail.pnr_data.all().order_by('-data_datetime')
-
+    pnr_not_invoiced = get_ticket_created_today_not_invoiced(request)
+    context['pnr_not_invoiced'] = pnr_not_invoiced
+    context['notif_number'] = len(pnr_not_invoiced)
+    
     # PNR not invoiced 
     if pnr_detail.status_value == 0:
         __ticket_base = pnr_detail.tickets.filter(ticket_status=1).exclude(Q(total=0))
@@ -2002,6 +2008,27 @@ def ticket_delete(request):
 
         return JsonResponse({'status':'ok'})
 
+# ------- Notification ---------------------------------
+def get_ticket_created_today_not_invoiced(request):
+    # get number of ticket not invoiced today
+    today = datetime.now().date()
+
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0, tzinfo=timezone.utc)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59, tzinfo=timezone.utc)
+    
+    print('REQUEST USER : ',request.user.id)
+    current_user = User.objects.get(id= request.user.id)
+    print('CURRENT USER : ',current_user)
+    if current_user.role_id == 1:
+        tickets = Ticket.objects.filter(pnr_id__system_creation_date__range=[start_date, end_date], is_invoiced= False, fare=0, ticket_status=1, state=0)
+    else:
+        tickets = Ticket.objects.filter(pnr__agent_id = current_user.id,pnr_id__system_creation_date__range=[start_date, end_date], is_invoiced= False, fare=0, ticket_status=1, state=0)
+    
+    print('PNRS : ',tickets)
+    nbre_pnr = tickets.count()
+    print('------------- NOTIF NUMBER----------------- : ',nbre_pnr)
+
+    return tickets
 
 # Motif pour décommander un PNR
 @login_required(login_url='index')

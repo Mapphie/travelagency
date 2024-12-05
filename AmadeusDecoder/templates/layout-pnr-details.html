@@ -40,6 +40,7 @@
 
  <!-- style -->
  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+ <link rel="stylesheet" href="{% static 'css/notification.css' %}">
  <link rel="stylesheet" href="{% static 'css/pnr_motif.css' %}">
 
  <link rel="stylesheet" href="{% static 'css/select-custom.css' %}">
@@ -112,6 +113,19 @@ old -->
             </div>
           </li>
           {% endwith %}
+        {% endif %}
+
+        {% if notif_number != 0 %}
+          <div class="row" style=" margin-left:1rem;">
+            <div class ="alert" style="background: #FAE6E6;padding: .5em .5em .5em 1em;margin-right:20px;box-shadow: inset 6px 0 #CC0000;">
+              
+              <h6><i class="fa fa-exclamation-triangle blink" style="font-size: 1em; color: #CC0000;margin:0 6px 0 0;" aria-hidden="true"></i>
+                <b>{% if notif_number == 1%}  BILLET NON COMMANDE {% else %} BILLETS NON COMMANDES {% endif %} </b>
+              </h6>
+              <div class="alert_text">Il reste <span class="blink" style="color: #CC0000;"><b>{{notif_number}}</b></span> 
+              {% if notif_number == 1%} billet à commander. {% else %} billets à commander{% endif %}</div>
+            </div>
+          </div>
         {% endif %}
           
         <li class="nav-item ml-1">
@@ -303,6 +317,7 @@ old -->
                 <p>Clients</p>
               </a>
             </li>
+            
             {% endif %}
             <!--menu agent contrôle role_id=4-->
             {% if request.user.role_id == 4 %} 
@@ -705,6 +720,7 @@ old -->
   <script src="{% static 'js/main.js' %}"></script>
   <script src="{% static 'js/comment.js' %}"></script>
   <script src="{% static 'js/anomalie.js' %}"></script>
+  <script src="{% static 'js/notification.js' %}"></script>
   <script src="{% static 'js/virtual-select.min.js' %}"></script>
   {% comment %} <script src="{% static 'js/virtual-select.js' %}"></script> {% endcomment %}
 

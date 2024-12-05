@@ -50,6 +50,8 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <!-- tablesort-->
   <link href="{% static 'css/theme.default.css' %}" rel="stylesheet">
+  <link href="{% static 'css/notification.css' %}" rel="stylesheet">
+
 
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.css" integrity="sha512-Y+AaVWdRf6zsGm7eV+EGOIuqYZoi2wUQ7wF8oHbnLy8k2zdVGSxyjn2qDUMFkLRy/9mqOAE5BeyEqx1yxDTQIw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -108,6 +110,19 @@ old -->
                 Pnr non remonté
               </button>
             </div>
+            {% if notif_number != 0 %}
+            <div class="row" style=" margin-left:1rem;">
+              <div class ="alert" style="background: #FAE6E6;padding: .5em 1em .5em 2em;margin: 0 0 0 0;box-shadow: inset 6px 0 #CC0000;">
+                
+                <h5><i class="fa fa-exclamation-triangle blink" style="font-size: 1em; color: #CC0000;margin:0 6px 0 0;" aria-hidden="true"></i>
+                  <b>{% if notif_number == 1%}  BILLET NON COMMANDE {% else %} BILLETS NON COMMANDES {% endif %} </b>
+                </h5>
+                <div class="alert_text">Il reste <span class="blink" style="color: #CC0000;"><b>{{notif_number}}</b></span> 
+                {% if notif_number == 1%} billet à commander. {% else %} billets à commander{% endif %}</div>
+              </div>
+            </div>
+            {% endif %}
+            
 
         </li>
       </ul>
@@ -278,6 +293,7 @@ old -->
                 <p>Clients</p>
               </a>
             </li>
+            
             {% endif %}
             <!--menu agent contrôle role_id=4-->
             {% if request.user.role_id == 4 %}
@@ -413,6 +429,9 @@ old -->
     <script src="{% static 'js/invoice_unorder.js' %}"></script>
     <script src="{% static 'js/UnorderedPnrHandler.js' %}"></script>
     <script src="{% static 'js/anomalie.js' %}"></script>
+    <script src="{% static 'js/notification.js' %}"></script>
+
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/colresizable/1.6.0/colResizable-1.6.min.js" integrity="sha512-pMZ2rgWRGMywzbRAVwGk+auTREN0ldKKjACUSB4cneTgD3kn/6pu//Lxi4l8xSRkY83HENr1vztTnGDySWs0Mg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -422,6 +441,8 @@ old -->
     <script src=" https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js "></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
+
+
     {% if messages %}
     {% for message in messages %}
     {% if message.tags == 'success'%}
