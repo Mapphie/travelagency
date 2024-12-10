@@ -1881,6 +1881,10 @@ def get_all_pnr_unordered(request):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
     context = {'page_obj': page_obj, 'row_num': row_num, 'pnr_count' : pnr_count}
+
+    pnr_not_invoiced = get_ticket_created_today_not_invoiced(request)
+    context['pnr_not_invoiced'] = pnr_not_invoiced
+    context['notif_number'] = len(pnr_not_invoiced)
     
     return render(request,'unordered_pnr.html', context)
 
