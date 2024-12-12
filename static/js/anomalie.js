@@ -34,6 +34,7 @@ function createButton(container, ticketNumber) {
 
         $('#info').show();
         $('#comment-ticket-next-button').show();
+        $('#taxSection').show();
 
         $('#ticket_number').val(ticketNumber);
         // Afficher le bouton annuler

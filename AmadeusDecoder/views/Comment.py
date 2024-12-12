@@ -381,7 +381,7 @@ def save_ticket_anomalie(request):
         
         user = User.objects.filter(id= user_id).first()
 
-        anomalie = Anomalie(pnr=pnr, categorie='Billet non remonté', infos=info, issuing_user = user, creation_date=timezone.now())
+        anomalie = Anomalie(pnr=pnr, categorie='Billet non remonté', infos=info, issuing_user = user, creation_date=datetime.now())
         anomalie.save()   
         anomalie_id = anomalie.id
         response_data = {'status':'ok','anomalie_id':anomalie_id}
