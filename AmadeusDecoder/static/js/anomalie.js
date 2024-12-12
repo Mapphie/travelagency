@@ -324,8 +324,9 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     let result = data.verif;
-
-                    if (result.exist === true) { // if ticket exists
+                    console.log('RESULT : ', result);
+                    
+                    if (result.exist === 'Exist') { // if ticket exists
                         // Don't allow to modify ticket number
                         $('#ticket_number').attr('disabled', true)
                         showInfoSection();
@@ -337,11 +338,20 @@ $(document).ready(function () {
                         toastr.info('Ticket Is no adc')
                     } 
                     if(result === 'pnr'){
-                        toastr.info("Billet d'un autre PNR")
+                        toastr.info("Billet d'un autre PNR !")
+                    }
+                    if(result === 'True'){
+                        toastr.info("Ce billet est déjà remonté !")
+                    }
+
+                    if(result === 'Tarification'){
+                        toastr.info("Envoi de mail de tarification billet manquant !")
                     }
                     
-                    if (result.exist === false) {
-                        toastr.info(`Ce billet est déja présent dans le PNR ${result.pnr}`)
+                    if (result.exist === true) {
+                        toastr.info(`Ce billet est déja présent dans le PNR ${result.pnr} !`);
+                        $('#info').hide();
+                        $('#taxSection').hide();
                     }
                     if (result === 'False') { // if ticket does not exist
                         $.ajax({
