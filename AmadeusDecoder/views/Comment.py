@@ -218,7 +218,7 @@ def get_unshowed_tickets(request):
     context = {}
     if request.method == 'POST':
         pnr_id = request.POST.get('pnr_id')
-        tickets_query = Ticket.objects.filter(pnr_id= pnr_id).exclude(Q(ticket_status=1) | Q(ticket_type='TST') | Q(is_invoiced=True))
+        tickets_query = Ticket.objects.filter(pnr_id= pnr_id).exclude( (Q(ticket_status=1) & ~Q(state=2)) | Q(ticket_type='TST') | Q(is_invoiced=True))
         tickets= []
         for ticket in tickets_query:
             ticket_data = {
@@ -248,10 +248,12 @@ def verif_ticket(request):
             if int(ticket.pnr_id) == int(pnr_id):
                 if ticket.is_no_adc:
                     response['verif'] = 'is_no_adc'
-                elif ticket.total > 0 and ticket.ticket_status == 1:
-                    response['verif'] = 'ticket_already_exist'
-                else:
+                elif ticket.state !=2 and ticket.ticket_status == 1:
                     response['verif'] = 'True'
+                elif ticket.state !=2 and ticket.ticket_status != 1:
+                    response['verif'] = 'Exist'
+                elif ticket.state ==2 and ticket.ticket_status == 1:
+                    response['verif'] = 'Tarification'
             else:
                 response['verif'] = {
                     'exist': True,
@@ -449,8 +451,12 @@ def update_ticket(request):
             if ticket.total == 0:
                 ticket.is_no_adc = True
             ticket.ticket_status = 1
+            ticket.state = 0
             ticket.emitter = None
             ticket.issuing_date = datetime.now()
+
+            if issuing_user.id in issuing_user.has_lift_tki_perm():
+                ticket.emitter = issuing_user
             ticket.save()
            
         else:
@@ -469,7 +475,9 @@ def update_ticket(request):
             ticket.passenger_id=anomalie.infos.get('passenger_id')
             ticket.ticket_type=anomalie.infos.get('ticket_type')
             ticket.is_subjected_to_fees=anomalie.infos.get('fee')
-            ticket.emitter=None
+
+            if issuing_user.id in issuing_user.has_lift_tki_perm():
+                ticket.emitter = issuing_user
             ticket.issuing_date=datetime.now()
 
             print('************************IS TICKET : ', anomalie.infos.get('isticket'))
@@ -498,7 +506,7 @@ def update_ticket(request):
             new_user_copying.save()
         
         anomalie.status = 1
-        anomalie.response_date = timezone.now()
+        anomalie.response_date = datetime.now()
         anomalie.save()
    
         return JsonResponse('ok', safe=False)
@@ -509,7 +517,7 @@ def refuse_anomaly(request):
         anomalie_id = request.POST.get('anomalie_id')
         anomalie = Anomalie.objects.get(pk=anomalie_id)
         anomalie.status = 2
-        anomalie.response_date = timezone.now()
+        anomalie.response_date = datetime.now()
         anomalie.admin_id = request.user
         anomalie.save()
         return JsonResponse('ok',safe=False)
