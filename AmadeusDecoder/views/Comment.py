@@ -218,7 +218,7 @@ def get_unshowed_tickets(request):
     context = {}
     if request.method == 'POST':
         pnr_id = request.POST.get('pnr_id')
-        tickets_query = Ticket.objects.filter(pnr_id= pnr_id).filter((Q(transport_cost=0) & Q(tax=0) & Q(total=0)) | Q(is_no_adc=True)).all()
+        tickets_query = Ticket.objects.filter(pnr_id= pnr_id).exclude(Q(ticket_status=1) | Q(ticket_type='TST') | Q(is_invoiced=True))
         tickets= []
         for ticket in tickets_query:
             ticket_data = {
