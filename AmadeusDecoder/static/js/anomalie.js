@@ -340,7 +340,7 @@ $(document).ready(function () {
                         toastr.info("Billet d'un autre PNR")
                     }
                     
-                    if (result.exist === false) {
+                    if (result.exist === true) {
                         toastr.info(`Ce billet est déja présent dans le PNR ${result.pnr}`)
                     }
                     if (result === 'False') { // if ticket does not exist
