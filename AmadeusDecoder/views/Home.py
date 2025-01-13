@@ -10,7 +10,7 @@ import random
 import pandas as pd
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -354,7 +354,7 @@ def pnr_research(request):
         search_results = []
         
         pnr_research = request.POST.get('pnr_research')
-        pnr_results = Pnr.objects.all().filter(Q(number__icontains=pnr_research)).filter(Q(system_creation_date__gt=maximum_timezone))
+        pnr_results = Pnr.objects.all().filter(Q(number__icontains=pnr_research)).filter(Q(system_creation_date__gt=maximum_timezone)).exclude(state=4)
         for p1 in pnr_results :
             search_results.append(p1)
         # search with passenger
@@ -2043,3 +2043,12 @@ def addMotif(request):
         motifpnr.save()
         context={'motif_id':motifpnr.id}
         return JsonResponse(context)
+
+@login_required(login_url='index')
+def cancel_pnr(request, pnr_id):
+    print("CANCEL PNR")
+    pnr = Pnr.objects.get(id=pnr_id)
+    pnr.state = 4
+    pnr.status = "Annulé"
+    pnr.save()
+    return redirect('home')
