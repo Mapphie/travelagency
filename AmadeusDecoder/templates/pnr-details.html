@@ -207,6 +207,18 @@
 												</p>
 											{% endif %}
 
+											{% if pnr.state == 4 %} 
+											<p>
+												<button 
+													type="button" 
+													class="btn btn-danger mr-2" 
+													style="padding: 0.1rem 0.5rem !important">
+													<i class="fa fa-times-circle-o text-white" data-toggle="tooltip" data-placement="top" title="dossier annulé!"></i>
+													<span class="text-white"><b>DOSSIER ANNULÉ</b></span>
+												</button>
+											</p>
+											{% endif %}
+
 
 										</div>
 										<div class="col-md-3 px-2">
@@ -530,7 +542,7 @@
 										<div class="col-md-2 text-end all-btn">
 											{% if request.user.role_id == 3 or 1 %}
 											<a id="create-devis"
-											   class="{% if pnr.status == 'Emis' %} disabled {% endif %} btn btn-sm-block btn-info create-devis mb-2 py-0 px-1"
+											   class="{% if pnr.status == 'Emis' or pnr.state == 4 %} disabled {% endif %} btn btn-sm-block btn-info create-devis mb-2 py-0 px-1"
 											>
 												<i class="fa fa-pen"></i>
 												Créer devis
@@ -539,7 +551,7 @@
 											{% with pnr|passenger_is_invoiced_in_passenger_invoice as passenger_is_invoiced_in_passenger_invoice %} 
 												<a 
 													id="edit"
-													class="btn btn-sm-block btn-primary edit mb-2 py-0 px-1" {% if pnr.is_invoiced and passenger_is_invoiced_in_passenger_invoice %} hidden="true" {% endif %}
+													class="{% if pnr.state == 4 %} disabled {% endif %} btn btn-sm-block btn-primary edit mb-2 py-0 px-1" {% if pnr.is_invoiced and passenger_is_invoiced_in_passenger_invoice %} hidden="true" {% endif %}
 												>
 													<i class="fas fa-edit"></i>
 													Modifier
@@ -572,7 +584,7 @@
 											<button 
 												type="button" 
 												id="create-command" 
-												class="btn btn-sm-block btn-info mb-2 py-0 px-1" 
+												class="{% if pnr.state == 4 %} disabled {% endif %} btn btn-sm-block btn-info mb-2 py-0 px-1" 
 												data-toggle="modal"
 												data-target="#modal-confirm-cmd" 
 												{% if pnr.is_invoiced or pnr.status == "Non émis" or pnr.state == 1 %} 

@@ -664,11 +664,22 @@ old -->
           <strong class="text-center">© 2023 <a href="https://phidia.fr">Phidia</a>.</strong> Tous droits réservés.
           <b>Version</b> 1.6.12
         </div>
+        {% if request.user.role_id == 1 and pnr.state != 4 and not pnr.is_invoiced %}
+          <button 
+            type="button" 
+            class="btn btn-danger mr-2" id='ExcelUpload' onclick="location.href='{% url 'cancel_pnr' pnr.id %}'"
+            style="padding: 0.1rem 0.5rem !important">
+            <i class="fa fa-archive text-white" data-toggle="tooltip" data-placement="top"  title="Annuler le dossier"></i>
+            <span class="text-white">Annuler</span>
+          </button>
+
+        {% endif %}
+        
         {% with pnr|pnr_comment_state as pnr_comment_state %} 
           <!-- -1: pas d'anomalie, 0: non traitée, 1: traitée -->
           <button 
             type="button" 
-            class="btn {% if pnr_comment_state == 0 %} btn-danger {% elif pnr_comment_state == 1 %} btn-success {% else %} btn-secondary {% endif %} mr-2" 
+            class="{% if pnr.state == 4 %} disabled {% endif %} btn {% if pnr_comment_state == 0 %} btn-danger {% elif pnr_comment_state == 1 %} btn-success {% else %} btn-secondary {% endif %} mr-2" 
             data-toggle="modal" 
             data-target="#modal-constat" 
             style="padding: 0.1rem 0.5rem !important">
