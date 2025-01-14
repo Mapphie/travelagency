@@ -1834,6 +1834,7 @@ function eraseCache() {
 $(".card-header").addClass("fixed-header");
 $("#tr-all-pnr").addClass("sticky-tr-table");
 
+
 // //card-header sticky
 // $(window).scroll(function () {
 //   // if ($(window).scrollTop() >= 80) {

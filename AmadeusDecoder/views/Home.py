@@ -10,7 +10,7 @@ import random
 import pandas as pd
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -223,6 +223,9 @@ def home(request):
         'users': users,
         'search_query': search_query,
     }
+    pnr_not_invoiced = get_ticket_created_today_not_invoiced(request)
+    context['pnr_not_invoiced'] = pnr_not_invoiced
+    context['notif_number'] = len(pnr_not_invoiced)
 
     return render(request, 'home.html', context)
 
@@ -257,7 +260,10 @@ def pnr_details(request, pnr_id):
     context['responses'] = Response.objects.filter(pnr_id=pnr_id)
     context['products'] = Product.objects.all()
     context['raw_data'] = pnr_detail.pnr_data.all().order_by('-data_datetime')
-
+    pnr_not_invoiced = get_ticket_created_today_not_invoiced(request)
+    context['pnr_not_invoiced'] = pnr_not_invoiced
+    context['notif_number'] = len(pnr_not_invoiced)
+    
     # PNR not invoiced 
     if pnr_detail.status_value == 0:
         __ticket_base = pnr_detail.tickets.filter(ticket_status=1).exclude(Q(total=0))
@@ -348,7 +354,7 @@ def pnr_research(request):
         search_results = []
         
         pnr_research = request.POST.get('pnr_research')
-        pnr_results = Pnr.objects.all().filter(Q(number__icontains=pnr_research)).filter(Q(system_creation_date__gt=maximum_timezone))
+        pnr_results = Pnr.objects.all().filter(Q(number__icontains=pnr_research)).filter(Q(system_creation_date__gt=maximum_timezone)).exclude(state=4)
         for p1 in pnr_results :
             search_results.append(p1)
         # search with passenger
@@ -1875,6 +1881,10 @@ def get_all_pnr_unordered(request):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
     context = {'page_obj': page_obj, 'row_num': row_num, 'pnr_count' : pnr_count}
+
+    pnr_not_invoiced = get_ticket_created_today_not_invoiced(request)
+    context['pnr_not_invoiced'] = pnr_not_invoiced
+    context['notif_number'] = len(pnr_not_invoiced)
     
     return render(request,'unordered_pnr.html', context)
 
@@ -2002,6 +2012,27 @@ def ticket_delete(request):
 
         return JsonResponse({'status':'ok'})
 
+# ------- Notification ---------------------------------
+def get_ticket_created_today_not_invoiced(request):
+    # get number of ticket not invoiced today
+    today = datetime.now().date()
+
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0, tzinfo=timezone.utc)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59, tzinfo=timezone.utc)
+    
+    print('REQUEST USER : ',request.user.id)
+    current_user = User.objects.get(id= request.user.id)
+    print('CURRENT USER : ',current_user)
+    if current_user.role_id == 1:
+        tickets = Ticket.objects.filter(pnr_id__system_creation_date__range=[start_date, end_date], is_invoiced= False, fare=0, ticket_status=1, state=0)
+    else:
+        tickets = Ticket.objects.filter(pnr__agent_id = current_user.id,pnr_id__system_creation_date__range=[start_date, end_date], is_invoiced= False, fare=0, ticket_status=1, state=0)
+    
+    print('PNRS : ',tickets)
+    nbre_pnr = tickets.count()
+    print('------------- NOTIF NUMBER----------------- : ',nbre_pnr)
+
+    return tickets
 
 # Motif pour décommander un PNR
 @login_required(login_url='index')
@@ -2012,3 +2043,13 @@ def addMotif(request):
         motifpnr.save()
         context={'motif_id':motifpnr.id}
         return JsonResponse(context)
+
+@login_required(login_url='index')
+def cancel_pnr(request, pnr_id):
+    print("CANCEL PNR")
+    pnr = Pnr.objects.get(id=pnr_id)
+    pnr.state = 4
+    status_value = 4
+    pnr.status = "Annulé"
+    pnr.save()
+    return redirect('pnr_details',pnr_id)

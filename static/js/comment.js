@@ -94,21 +94,27 @@ const showOtherCommandsMenu = document.getElementById("showOtherCommandsMenu");
 const otherCommandsMenu = document.querySelector(".other-commands-menu");
 const fixedHeaderCard = document.querySelector(".fixed-header")
 const stickyTrTable = document.querySelector(".sticky-tr-table")
+const stickyTbody = document.querySelector(".tbody-pnr")
 const pnrManagementMenuTrigger = document.querySelector("#pnrManagementMenu")
 const commentContainer = document.querySelector(".comment-container")
 const manageCustomerContainer = document.querySelector('.manage-customers-container')
 const manageUserContainer = document.querySelector(".manage-users-container")
+const unorderedPnr = document.querySelector('.unorderedPnrContainer')
 
 if (showOtherCommandsMenu) {
     // Fonction pour mettre à jour le style des éléments
     function updateElementStyles(isShown) {
         if (!isShown) {
+            console.log('Minimiser');
+            
             if (fixedHeaderCard && stickyTrTable && pnrManagementMenuTrigger) {
-                fixedHeaderCard.style = "top: 3.4rem !important";
-                stickyTrTable.style = "top: 6.4rem !important";
-                pnrManagementMenuTrigger.style = "margin-top: 1rem !important; visibility: visible";
+                fixedHeaderCard.style = "top: 5rem !important";
+                stickyTrTable.style = "top: 4.4rem !important";
+                pnrManagementMenuTrigger.style = "margin-top: 2.7rem !important; visibility: visible";
             }
         } else {
+            console.log(' Afficher les autres commandes');
+
             if (fixedHeaderCard && stickyTrTable && pnrManagementMenuTrigger) {
                 fixedHeaderCard.style.removeProperty("top");
                 stickyTrTable.style.removeProperty("top");
@@ -117,15 +123,27 @@ if (showOtherCommandsMenu) {
         }
 
         if (manageCustomerContainer) {
-            manageCustomerContainer.style.marginTop = isShown ? "3.25rem" : "0.25rem";
+            console.log('manageCustomerContainer');
+
+            manageCustomerContainer.style.marginTop = isShown ? "4.25rem" : "0.25rem";
         }
     
         if (commentContainer) {
-            commentContainer.style.marginTop = isShown ? "3rem" : "";
+            console.log('commentContainer');
+
+            commentContainer.style.marginTop = isShown ? "2rem" : "0.4rem";
         }
 
         if (manageUserContainer) {
-            manageUserContainer.style.marginTop = isShown ? "6rem" : "";
+            console.log('manageUserContainer');
+
+            manageUserContainer.style.marginTop = isShown ? "6.2rem" : "5rem";
+        }
+
+        if (unorderedPnr) {
+            console.log('unorderedPnr');
+
+            unorderedPnr.style.marginTop = isShown ? "5.2rem" : "5rem";
         }
     }
 
