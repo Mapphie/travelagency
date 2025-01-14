@@ -679,7 +679,7 @@ old -->
           <!-- -1: pas d'anomalie, 0: non traitée, 1: traitée -->
           <button 
             type="button" 
-            class="btn {% if pnr_comment_state == 0 %} btn-danger {% elif pnr_comment_state == 1 %} btn-success {% else %} btn-secondary {% endif %} mr-2" 
+            class="{% if pnr.state == 4 %} disabled {% endif %} btn {% if pnr_comment_state == 0 %} btn-danger {% elif pnr_comment_state == 1 %} btn-success {% else %} btn-secondary {% endif %} mr-2" 
             data-toggle="modal" 
             data-target="#modal-constat" 
             style="padding: 0.1rem 0.5rem !important">

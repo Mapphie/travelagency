@@ -2049,6 +2049,7 @@ def cancel_pnr(request, pnr_id):
     print("CANCEL PNR")
     pnr = Pnr.objects.get(id=pnr_id)
     pnr.state = 4
+    status_value = 4
     pnr.status = "Annulé"
     pnr.save()
-    return redirect('home')
+    return redirect('pnr_details',pnr_id)
