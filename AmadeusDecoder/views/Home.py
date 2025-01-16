@@ -1791,7 +1791,6 @@ def remove_other_fee_service(request):
         return JsonResponse({'status': 'not_found'})
 
 # décommander  un PNR
-@login_required(login_url="index")
 def unorder_pnr(request):
     if request.method == 'POST':
         pnr_number = request.POST.get('pnr_number')
