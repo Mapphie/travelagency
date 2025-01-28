@@ -162,6 +162,7 @@ def control_data_gp_odoo() :
     recipients = [
         "maphiesarobidy@outlook.fr",
         "tahina@phidia.onmicrosoft.com",
+        "nomenaandriamanarivo3@gmail.com",
     ]		
     subject = "Contrôle des données Gestion PNR - Odoo"						
 

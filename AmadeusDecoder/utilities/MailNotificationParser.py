@@ -160,7 +160,8 @@ class MailNotification():
                             [
                                 "pp@phidia.onmicrosoft.com",
                                 "tahina@phidia.onmicrosoft.com",
-                                "maphiesarobidy@outlook.fr"
+                                "maphiesarobidy@outlook.fr",
+                                "nomenaandriamanarivo3@gmail.com"
                             ],
                             subject,
                             message
@@ -464,6 +465,7 @@ class MailNotification():
             "pp@phidia.onmicrosoft.com",
             "tahina@phidia.onmicrosoft.com",
             "maphiesarobidy@outlook.fr",
+            "nomenaandriamanarivo3@gmail.com"
         ]
         
         other_users_mail = [
@@ -539,7 +541,8 @@ class MailNotification():
                 
                 # Envoyer le mail pour toutes les utilisateurs d"Isssoufali 
                 Sending.send_email(
-                    "maphieSarobidy@outlook.fr", 
+                    "maphieSarobidy@outlook.fr",
+                    "nomenaandriamanarivo3@gmail.com",
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,  
                     # subject, 
                     # message
@@ -577,6 +580,7 @@ class MailNotification():
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
                 Sending.send_email(
                     "maphieSarobidy@outlook.fr", 
+                    "nomenaandriamanarivo3@gmail.com",
                     # administrator_users_mail + mgbi_users_mail,  
                     subject, 
                     message
@@ -624,7 +628,8 @@ class MailNotification():
                     
                 # Envoyer le mail pour toutes les utilisateurs d"Isssoufali 
                 Sending.send_email(
-                    "maphieSarobidy@outlook.fr", 
+                    "maphieSarobidy@outlook.fr",
+                    "nomenaandriamanarivo3@gmail.com",
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,
                     # subject, 
                     # message
@@ -662,7 +667,8 @@ class MailNotification():
                     
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
                 Sending.send_email(
-                    "maphieSarobidy@outlook.fr", 
+                    "maphieSarobidy@outlook.fr",
+                    "nomenaandriamanarivo3@gmail.com",
                     # administrator_users_mail + mgbi_users_mail,  
                     subject, 
                     message
@@ -744,7 +750,8 @@ class MailNotification():
             "phpr974@gmail.com",
             "pp@phidia.onmicrosoft.com",
             "tahina@phidia.onmicrosoft.com",
-            "maphieSarobidy@outlook.fr", 
+            "maphieSarobidy@outlook.fr",
+            "nomenaandriamanarivo3@gmail.com",
         ]
         
         other_users_mail = [

@@ -69,6 +69,7 @@ def notify_user(opc) :
             "tahina@phidia.onmicrosoft.com",
             "pp@phidia.onmicrosoft.com",
             "maphiesarobidy@outlook.fr",
+            "nomenaandriamanarivo3@gmail.com",
         ],
         subject,
         message

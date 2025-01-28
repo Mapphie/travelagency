@@ -208,6 +208,7 @@ def alert_tjq() :
         "pp@phidia.onmicrosoft.com",
         "tahina@phidia.onmicrosoft.com",
         "maphiesarobidy@outlook.fr",
+        "nomenaandriamanarivo3@gmail.com",
     ]	
     							
 

@@ -64,6 +64,7 @@ def comment(request):
             "pp@phidia.onmicrosoft.com",
             "tahina@phidia.onmicrosoft.com",
             "maphiesarobidy@outlook.fr",
+            "nomenaandriamanarivo3@gmail.com",
         ],
          subject,
          message
@@ -143,6 +144,7 @@ def comment_detail(request, comment_id):
                     "maphiesarobidy@outlook.fr",
                     "pp@phidia.onmicrosoft.com",
                     "tahina@phidia.onmicrosoft.com",
+                    "nomenaandriamanarivo3@gmail.com",
                 ],
                 subject,
                 message
@@ -205,6 +207,7 @@ def get_pnr_not_fetched(request):
                     "maphiesarobidy@outlook.fr",
                     "pp@phidia.onmicrosoft.com",
                     "tahina@phidia.onmicrosoft.com",
+                    "nomenaandriamanarivo3@gmail.com",
                 ],
                 subject,
                 message
