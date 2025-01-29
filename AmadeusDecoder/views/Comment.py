@@ -62,9 +62,9 @@ def comment(request):
         "anomalie.issoufali.pnr@gmail.com",
         [
             "pp@phidia.onmicrosoft.com",
-            "tahina@phidia.onmicrosoft.com",
-            "maphiesarobidy@outlook.fr",
-            "nomenaandriamanarivo3@gmail.com",
+           "tahina@alita.re",
+            "maphie@alita.re",
+            "nomena@alita.re",
         ],
          subject,
          message
@@ -141,10 +141,10 @@ def comment_detail(request, comment_id):
                 "anomalie.issoufali.pnr@gmail.com",
                 [   
                     comments.user_id.email,
-                    "maphiesarobidy@outlook.fr",
                     "pp@phidia.onmicrosoft.com",
-                    "tahina@phidia.onmicrosoft.com",
-                    "nomenaandriamanarivo3@gmail.com",
+                    "tahina@alita.re",
+                    "maphie@alita.re",
+                    "nomena@alita.re",
                 ],
                 subject,
                 message
@@ -204,10 +204,10 @@ def get_pnr_not_fetched(request):
             Sending.send_email_pnr_not_fetched(
                 "anomalie.issoufali.pnr@gmail.com",
                 [
-                    "maphiesarobidy@outlook.fr",
                     "pp@phidia.onmicrosoft.com",
-                    "tahina@phidia.onmicrosoft.com",
-                    "nomenaandriamanarivo3@gmail.com",
+                    "tahina@alita.re",
+                    "maphie@alita.re",
+                    "nomena@alita.re",
                 ],
                 subject,
                 message

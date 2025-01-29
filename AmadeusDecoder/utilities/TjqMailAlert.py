@@ -206,9 +206,9 @@ def alert_tjq() :
         "karim@agences-issoufali.com",
         "fouadi@agences-issoufali.com",
         "pp@phidia.onmicrosoft.com",
-        "tahina@phidia.onmicrosoft.com",
-        "maphiesarobidy@outlook.fr",
-        "nomenaandriamanarivo3@gmail.com",
+        "tahina@alita.re",
+        "maphie@alita.re",
+        "nomena@alita.re",
     ]	
     							
 
