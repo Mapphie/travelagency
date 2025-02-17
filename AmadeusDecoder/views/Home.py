@@ -1559,9 +1559,7 @@ def get_order(request, pnr_id):
                                         'DepartureDate': item.value.get('departureDate'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
                                         'DepartureTime': item.value.get('departureTime'),
-                                        'room': item.value.get('room'),
-                                        'adults': item.value.get('adults'),
-                                        'kids': item.value.get('kids'),
+                                        
                                     }
 
                                 if item.designation == 'TAXI':

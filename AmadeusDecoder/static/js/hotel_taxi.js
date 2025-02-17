@@ -609,9 +609,7 @@ $('#ConfirmAddHotel').on('click', function(){
   var arrivalTime = document.getElementById('arrivalTime').value;
   var departureDate = document.getElementById('departureDate').value;
   var departureTime = document.getElementById('departureTime').value;
-  var room = document.getElementById('room').value;
-  var adults = document.getElementById('adults').value;
-  var kids = document.getElementById('kids').value;
+
   var pnr_id = document.getElementById('pnr_id').getAttribute('data-id');
 
  // Enregistrer le fournisseur s'il est nouveau    
@@ -623,7 +621,7 @@ $('#ConfirmAddHotel').on('click', function(){
   }
   
   // Enregistrer toutes les informations dans sessionStorage
-  hotel_info = {'name':name,'arrivalDate':arrivalDate,'arrivalTime':arrivalTime,'departureDate':departureDate,'departureTime':departureTime,'room':room,'adults':adults,'kids':kids};
+  hotel_info = {'name':name,'arrivalDate':arrivalDate,'arrivalTime':arrivalTime,'departureDate':departureDate,'departureTime':departureTime};
   sessionStorage.setItem('hotel_info',JSON.stringify(hotel_info));
 
   toastr.success('Informations ajoutées.')
