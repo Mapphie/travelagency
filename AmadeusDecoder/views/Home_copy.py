@@ -26,7 +26,7 @@ from AmadeusDecoder.models.invoice.Clients import Client
 from AmadeusDecoder.models.utilities.Comments import Comment, Response
 from AmadeusDecoder.models.invoice.Ticket import Ticket
 from AmadeusDecoder.models.invoice.Fee import Fee, ReducePnrFeeRequest, OthersFee
-from AmadeusDecoder.models.invoice.Invoice import Invoice, InvoicesCanceled, MotifPnr
+from AmadeusDecoder.models.invoice.Invoice import Invoice, InvoicesCanceled
 from AmadeusDecoder.models.invoice.InvoiceDetails import InvoiceDetails
 from AmadeusDecoder.models.pnr.Passenger import Passenger
 from AmadeusDecoder.models.invoice.InvoicePassenger import PassengerInvoice
@@ -34,7 +34,6 @@ from AmadeusDecoder.models.invoice.Fee import Product
 from AmadeusDecoder.models.pnrelements.PnrAirSegments import PnrAirSegments
 from AmadeusDecoder.models.history.History import History
 from AmadeusDecoder.models.configuration.Configuration import Configuration
-from AmadeusDecoder.models.pnrelements.SpecialServiceRequest import ServiceSupplier
 
 from AmadeusDecoder.utilities.FtpConnection import upload_file
 from AmadeusDecoder.utilities.SendMail import Sending
@@ -55,7 +54,7 @@ from ..models.pnr.OptimizedPnrList import OptimisedPnrList
 
 
 @login_required(login_url='index')
-def home(request):
+def home_copy(request):
     def format_date_range(date_range):
         if date_range:
             for fmt in ("%d-%m-%Y", "%Y-%m-%d"):
@@ -171,7 +170,7 @@ def home(request):
     # print(f'Search Query *** {search_query}')
     
     if search_query:
-        filters = Q(number__icontains=search_query) | Q(passengers__icontains=search_query) | \
+        filters &= Q(number__icontains=search_query) | Q(passengers__icontains=search_query) | \
                    Q(agency_office_code__icontains=search_query) | Q(agency_office_name__icontains=search_query) | Q(agency_name__icontains=search_query) | \
                    Q(creator__icontains=search_query) | Q(emitter__icontains=search_query) | \
                    Q(client__icontains=search_query)
@@ -225,7 +224,7 @@ def home(request):
         'search_query': search_query,
     }
 
-    return render(request, 'home.html', context)
+    return render(request, 'home-copy.html', context)
 
 
 @login_required(login_url='index')
@@ -455,7 +454,7 @@ def pnr_search_by_pnr_number(request):
                 
                 # Determine if the value length and characteristics match the criteria
                 # -R means refund : to make ability to search refund
-                elif (value_length >= 13 and value.isdigit()) or value_length == 16 or (value_length >= 13 and '-R' in value):
+                if (value_length >= 13 and value.isdigit()) or value_length == 16 or (value_length >= 13 and '-R' in value):
                     # Search for a Ticket with this number
                     ticket = Ticket.objects.filter(
                         number__icontains=value,
@@ -910,8 +909,8 @@ def get_order(request, pnr_id):
     config = Configuration.objects.filter(name='Saving File Tools', value_name='File protocol', environment=settings.ENVIRONMENT)
 
     
-    file_dir = '/opt/issoufali/odoo/issoufali-addons/import_saleorder/data/source'
-    customer_dir = '/opt/issoufali/odoo/issoufali-addons/contacts_from_incadea/data/source'
+    file_dir = '/opt/odoo/issoufali-addons/import_saleorder/data/source'
+    customer_dir = '/opt/odoo/issoufali-addons/contacts_from_incadea/data/source'
     
     fieldnames_order = [
         'LineID',
@@ -1155,32 +1154,6 @@ def get_order(request, pnr_id):
                                 type_other_fee = item.fee_type
                             else:
                                 type_other_fee = 'EMD'
-
-                            print('------------------- HOTEL TAXI DETAILS -------------------------')
-
-                            print('ITEM DESIGNATION : ',item.designation)
-                            if item.designation in ['HOTEL','TAXI']:
-                                if item.designation == 'HOTEL':
-                                    _ht_details= { 
-                                        'Name': item.value.get('name'),
-                                        'ArrivalDate': item.value.get('arrivalDate'),
-                                        'DepartureDate': item.value.get('departureDate'),
-                                        'ArrivalTime': item.value.get('arrivalTime'),
-                                        'DepartureTime': item.value.get('departureTime'),
-                                        'Client' : item.value.get('clinet')
-                                    }
-
-                                if item.designation == 'TAXI':
-                                    _ht_details= { 
-                                        'Name': item.value.get('name'),
-                                        'Date': item.value.get('date'),
-                                        'Heure': item.value.get('heure'),
-                                        'localisation': item.value.get('location'),
-                                        'passagers': item.value.get('passagers'),
-                                        
-                                    }
-                                print(_ht_details)
-
                             csv_order_lines.append({
                                 'LineID': order.id,
                                 'Type': type_other_fee,
@@ -1194,8 +1167,7 @@ def get_order(request, pnr_id):
                                 'Civility': '',
                                 'PassengerFirstname': '',
                                 'PassengerLastname': '',
-                                'Segments': '', 
-                                'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',                     
+                                'Segments': '',                      
                                 'DocCurrency': 'EUR',
                                 'Transport': item.cost,
                                 'Tax': item.tax,
@@ -1618,7 +1590,6 @@ def import_product(request, pnr_id):
             product = json.loads(request.POST.get('listNewProduct'))
             pnr = Pnr.objects.get(pk=int(pnr_id))
             
-            # cas pour l'AVOIR COMPAGNIE
             if product[0] == '19':
                 if float(product[3]) > 0:
                     product[3] = -abs(product[3])
@@ -1633,18 +1604,6 @@ def import_product(request, pnr_id):
                     passenger = Passenger.objects.get(pk=product[8])
                     passenger_segment = OtherFeeSegment(segment=segment,other_fee= other_fees, passenger=passenger)
                     passenger_segment.save()
-
-            # cas pour l'HOTEL et TAXI
-            if product[0] == '10' or product[0] == '12':
-
-                other_fee = OthersFee(designation=product[2], cost=product[3], tax=product[4], total=product[5],
-                                        pnr=pnr, fee_type=product[1], reference=product[7], emitter=emitter,
-                                        quantity=1, is_subjected_to_fee=False,creation_date=datetime.now())
-                other_fee.save()
-                value = json.loads(product[8])
-                other_fee.value = value
-                other_fee.passenger_segment = value.get("client")
-                other_fee.save()
             
             else:
                 other_fees = OthersFee.objects.filter(pnr=pnr_id, product_id=product[0])
@@ -1652,8 +1611,6 @@ def import_product(request, pnr_id):
                                         pnr=pnr, fee_type=product[1], passenger_segment=product[6], reference=product[7], emitter=emitter,
                                         quantity=1, is_subjected_to_fee=False, creation_date=datetime.now())
                 other_fees.save()
-
-
             
             # save creator user to user copying
             try:
@@ -1833,8 +1790,7 @@ def unorder_pnr(request):
     if request.method == 'POST':
         pnr_number = request.POST.get('pnr_number')
         invoice_number = request.POST.get('invoice_number')
-        motif_id = request.POST.get('motif')
-        motif = MotifPnr.objects.get(pk=motif_id)
+        motif = request.POST.get('motif')
         user_id = request.POST.get('user_id')
         
         if motif is None:
@@ -1863,7 +1819,7 @@ def unorder_pnr(request):
 
                 if passenger_invoice.ticket_id or passenger_invoice.other_fee_id or passenger_invoice.fee_id:
                     # save in the InvoicesCanceled
-                    invoices_canceled = InvoicesCanceled(pnr_id=pnr.id,invoice_number=invoice_number,motif_id=motif,ticket_id=passenger_invoice.ticket_id, other_fee_id = passenger_invoice.other_fee_id,user_id=user_id) 
+                    invoices_canceled = InvoicesCanceled(pnr_id=pnr.id,invoice_number=invoice_number,motif=motif,ticket_id=passenger_invoice.ticket_id, other_fee_id = passenger_invoice.other_fee_id,user_id=user_id, fee_id=passenger_invoice.fee_id) 
                     invoices_canceled.save()
                 
         
@@ -1929,7 +1885,7 @@ def unordered_pnr_research(request):
         search_results = []
         
         pnr_research = request.POST.get('pnr_research')
-        pnr_results = InvoicesCanceled.objects.all().filter(Q(invoice_number__icontains=pnr_research) | Q(pnr__id__icontains=pnr_research)| Q(motif_id__designation__icontains=pnr_research) | Q(pnr__number__icontains=pnr_research)).distinct('pnr_id')
+        pnr_results = InvoicesCanceled.objects.all().filter(Q(invoice_number__icontains=pnr_research) | Q(pnr__id__icontains=pnr_research)| Q(motif__icontains=pnr_research) | Q(pnr__number__icontains=pnr_research)).distinct('pnr_id')
         
         if pnr_results.exists():
             for p1 in pnr_results :
@@ -1975,7 +1931,7 @@ def unordered_pnr_research(request):
             values['pnr_id'] = invoice.pnr.id
             values['pnr_number'] = invoice.pnr.number
             values['invoice_number'] = invoice.invoice_number
-            values['motif'] = invoice.motif_id.designation
+            values['motif'] = invoice.motif
             values['date'] = invoice.date
             values['user'] = invoice.user.username
             results.append(values)
@@ -2044,85 +2000,3 @@ def ticket_delete(request):
 
 
         return JsonResponse({'status':'ok'})
-
-
-# --------------- HOTEL & TAXI -- ---------------------------
-@login_required(login_url="index")
-def get_service_supplier_list(request):
-    
-    if request.method == 'GET':
-        hotel_suppliers = ServiceSupplier.objects.filter(service__id=10).all()
-        hSupplier = []
-        for supplier in hotel_suppliers:
-            hSupplier.append({"id":supplier.id,"name":supplier.name})
-        taxi_suppliers = ServiceSupplier.objects.filter(service__id=12).all()
-        tSupplier = []
-        for supplier in taxi_suppliers:
-            tSupplier.append({"id":supplier.id,"name":supplier.name})
-        print("------------- HOTEL SUPPLIER --------------: ",hotel_suppliers)
-
-        context = {"hotel_suppliers":hSupplier,"taxi_suppliers":tSupplier}
-        return JsonResponse(context)
-    
-@login_required(login_url='index')
-def add_service_supplier(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        service_id = request.POST.get('service')
-
-        service_supplier = ServiceSupplier(name=name,service_id= service_id)
-        service_supplier.save()
-
-        return JsonResponse({'success':True, 'message': 'Service supplier added successfully'})
-
-@login_required(login_url="index")
-def save_hotel(request):
-    if request.method == 'POST':
-        hotel_name = request.POST.get('name')
-        arrivalDate = request.POST.get('arrivalDate')
-        arrivalTime = request.POST.get('arrivalTime')
-        departureDate = request.POST.get('departureDate')
-        departureTime = request.POST.get('departureTime')
-        room = request.POST.get('room')
-        adults = request.POST.get('adults')
-        kids = request.POST.get('kids')
-        pnr_id = request.POST.get('pnr_id')
-
-        hotel_detail = {'name':hotel_name,'arrivalDate':arrivalDate,'arrivalTime':arrivalTime,'departureDate':departureDate,'departureTime':departureTime,'room':room,'adults':adults,'kids':kids}
-
-        other_fee = OthersFee(designation="HOTEL",value=hotel_detail,pnr_id=pnr_id,fee_type="Supplement",creation_date=datetime.now())
-        other_fee.save()
-
-        context = {"hotel_detail":hotel_detail}
-
-        return JsonResponse(context)
-
-@login_required(login_url="index")
-def save_taxi(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        date = request.POST.get('date')
-        heure = request.POST.get('heure')
-        passagers = request.POST.get('passagers')
-        location = request.POST.get('location')
-
-        pnr_id = request.POST.get('pnr_id')
-
-        taxi_detail = {'name':name,'date':date,'heure':heure,'passagers':passagers,'depart':location}
-
-        other_fee = OthersFee(designation="TAXI",value=taxi_detail,pnr_id=pnr_id,fee_type="Supplement",creation_date=datetime.now())
-        other_fee.save()
-
-        context = {"taxi_detail":taxi_detail}
-
-        return JsonResponse(context)
-
-# Motif pour décommander un PNR
-@login_required(login_url='index')
-def addMotif(request):
-    if request.method == 'POST':
-        designation = request.POST.get('designation')
-        motifpnr = MotifPnr(designation=designation)
-        motifpnr.save()
-        context={'motif_id':motifpnr.id}
-        return JsonResponse(context)
