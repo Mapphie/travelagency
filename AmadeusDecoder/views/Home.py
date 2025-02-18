@@ -1167,7 +1167,7 @@ def get_order(request, pnr_id):
                                         'DepartureDate': item.value.get('departureDate'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
                                         'DepartureTime': item.value.get('departureTime'),
-                                        'Client' : item.value.get('clinet')
+                                        'Client' : item.value.get('client')
                                     }
 
                                 if item.designation == 'TAXI':
