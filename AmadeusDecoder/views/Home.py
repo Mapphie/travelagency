@@ -1617,6 +1617,8 @@ def import_product(request, pnr_id):
         if 'listNewProduct' in request.POST:
             product = json.loads(request.POST.get('listNewProduct'))
             pnr = Pnr.objects.get(pk=int(pnr_id))
+            print("****************** PRODUCT *********************")
+            print(product)
             
             # cas pour l'AVOIR COMPAGNIE
             if product[0] == '19':
