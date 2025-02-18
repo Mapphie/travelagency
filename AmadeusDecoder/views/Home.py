@@ -1559,7 +1559,7 @@ def get_order(request, pnr_id):
                                         'DepartureDate': item.value.get('departureDate'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
                                         'DepartureTime': item.value.get('departureTime'),
-                                        
+                                        'Client' : item.value.get('clinet')
                                     }
 
                                 if item.designation == 'TAXI':
@@ -2030,10 +2030,12 @@ def import_product(request, pnr_id):
             if product[0] == '10' or product[0] == '12':
 
                 other_fee = OthersFee(designation=product[2], cost=product[3], tax=product[4], total=product[5],
-                                        pnr=pnr, fee_type=product[1], passenger_segment=product[6], reference=product[7], emitter=emitter,
+                                        pnr=pnr, fee_type=product[1], reference=product[7], emitter=emitter,
                                         quantity=1, is_subjected_to_fee=False,creation_date=datetime.now())
                 other_fee.save()
-                other_fee.value = json.loads(product[8])
+                value = json.loads(product[8])
+                other_fee.value = value
+                other_fee.passenger_segment = value.get("client")
                 other_fee.save()
             
             else:

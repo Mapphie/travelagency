@@ -1,6 +1,7 @@
 const hotel_supplier_list = [];
 const taxi_supplier_list = [];
 const departure_location_list = [];
+var pnr_id = document.getElementById('pnr_id').getAttribute('data-id');
 
 
 $('#SelectProduct').on('change', function(){
@@ -18,10 +19,11 @@ $('#SelectProduct').on('change', function(){
 function updateSelectHotelOptions() {
     const parent_hotel = document.getElementById("hotel-supplier-list")
     const parent_taxi = document.getElementById("taxi-supplier-list")
-
+    
 
     const hotel_child = document.getElementById("hotel-supplier-item")
     const taxi_child = document.getElementById("taxi-supplier-item")
+    
 
       if (hotel_child) {
         parent_hotel.removeChild(hotel_child);
@@ -29,6 +31,7 @@ function updateSelectHotelOptions() {
       if (taxi_child) {
         parent_taxi.removeChild(taxi_child);
       }
+      
 
       var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
@@ -77,8 +80,64 @@ function updateSelectHotelOptions() {
     xmlhttp.send();
 }
 
+function updateClientList(){
+  const parent_client = document.getElementById("hotel_client")
+  const client_child = document.getElementById("child_client")
+
+  if (client_child) {
+    parent_client.removeChild(client_child);
+  }
+
+  $.ajax({
+    type: "POST",
+    url:"/home/get-passengers-and-segments",
+    dataType: "json",
+    data:{
+      pnr_id: pnr_id,
+      csrfmiddlewaretoken: csrftoken,
+    },
+    success: function(data){
+      let passengers = data.context.passengers;
+      parent_client.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Passager";
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      parent_client.append(defaultOption);
+
+      passengers.map((passenger) => {
+        const newOption = document.createElement("option");
+        newOption.id = "client_child";
+        
+        if (passenger['passenger_name'] !== null && passenger['passenger_surname'] != null) {
+          let textContent = passenger['passenger_surname'] + ' ' + passenger['passenger_name'];
+          newOption.textContent = textContent;
+          newOption.value = textContent;
+        }
+        if (passenger['passenger_name'] !== null && passenger['passenger_surname'] == null) {
+          let textContent = passenger['passenger_name'];
+          newOption.textContent = textContent;
+          newOption.value = textContent;
+        }
+        if (passenger['passenger_name'] == null && passenger['passenger_surname'] !== null) {
+          let textContent = passenger['passenger_surname'];
+          newOption.textContent = textContent;
+          newOption.value = textContent;
+        }
+        parent_client.append(newOption);
+      });
+
+ 
+    }
+  })
+
+}
+
 $('#modalHotelInfo').on('show.bs.modal', function(){
   updateSelectHotelOptions();
+  updateClientList();
 });
 
 $('#modalTaxiInfo').on('show.bs.modal', function(){
@@ -609,8 +668,8 @@ $('#ConfirmAddHotel').on('click', function(){
   var arrivalTime = document.getElementById('arrivalTime').value;
   var departureDate = document.getElementById('departureDate').value;
   var departureTime = document.getElementById('departureTime').value;
+  var hotel_client = document.getElementById('hotel_client').value;
 
-  var pnr_id = document.getElementById('pnr_id').getAttribute('data-id');
 
  // Enregistrer le fournisseur s'il est nouveau    
   hotel_input = document.getElementById('hotel-supplier-input')    
@@ -619,9 +678,9 @@ $('#ConfirmAddHotel').on('click', function(){
   if (data_id == 0) {
     addServiceSupplier(name,10);
   }
-  
+
   // Enregistrer toutes les informations dans sessionStorage
-  hotel_info = {'name':name,'arrivalDate':arrivalDate,'arrivalTime':arrivalTime,'departureDate':departureDate,'departureTime':departureTime};
+  hotel_info = {'name':name,'arrivalDate':arrivalDate,'arrivalTime':arrivalTime,'departureDate':departureDate,'departureTime':departureTime,'client':hotel_client};
   sessionStorage.setItem('hotel_info',JSON.stringify(hotel_info));
 
   toastr.success('Informations ajoutées.')
