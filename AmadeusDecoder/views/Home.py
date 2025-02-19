@@ -1162,6 +1162,7 @@ def get_order(request, pnr_id):
                             if item.designation in ['HOTEL','TAXI']:
                                 if item.designation == 'HOTEL':
                                     _ht_details= { 
+                                        'Type': 'HOTEL',
                                         'Name': item.value.get('name'),
                                         'ArrivalDate': item.value.get('arrivalDate'),
                                         'DepartureDate': item.value.get('departureDate'),
@@ -1172,6 +1173,7 @@ def get_order(request, pnr_id):
 
                                 if item.designation == 'TAXI':
                                     _ht_details= { 
+                                        'Type': 'TAXI',
                                         'Name': item.value.get('name'),
                                         'Date': item.value.get('date'),
                                         'Heure': item.value.get('heure'),
