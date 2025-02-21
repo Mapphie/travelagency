@@ -1001,32 +1001,34 @@
 												<td><span class="billet">{{ other_fee.designation }}</span></td>
 												{% if other_fee|ancillary_passenger is not None %}
 												<td>
-													{% if other_fee.designation == 'HOTEL' or other_fee.designation == 'TAXI' %}
-														{% if other_fee.designation == 'HOTEL' %}
-															{% with other_fee.id|get_hotel_details as ht_details %}
-																<p>Nom : {{ ht_details.name }}
-																<br>Arrivée : {{ ht_details.arrival }}
-																<br>Sortie : {{ ht_details.departure }}
-																</p>
-															{% endwith %}
-
+													{% with other_fee.id|check_other_fee as needSlot %}
+														{% if needSlot %}
+															{% if other_fee.designation == 'HOTEL' %}
+																{% with other_fee.id|get_hotel_details as ht_details %}
+																	<p>Nom : {{ ht_details.name }}
+																	<br>Arrivée : {{ ht_details.arrival }}
+																	<br>Sortie : {{ ht_details.departure }}
+																	</p>
+																{% endwith %}
+															
+															{% else %}
+																{% with other_fee.id|get_transport_details as tx_details %}
+																	<p>Trajet : {{ tx_details.trajet }}
+																	<br>Départ : {{ tx_details.date }} {{ tx_details.departuretime }}
+																	<br>Arrivée :{{ tx_details.date }} {{ tx_details.arrivaltime }}
+																	</p>
+																{% endwith %}
+															{% endif %}
+															
+															
 														{% else %}
-															{% with other_fee.id|get_taxi_details as tx_details %}
-																<p>Trajet : {{ tx_details.trajet }}
-																<br>Départ : {{ tx_details.date }} {{ tx_details.departuretime }}
-																<br>Arrivée :{{ tx_details.date }} {{ tx_details.arrivaltime }}
-																</p>
-															{% endwith %}
+															{{ other_fee|ancillary_passenger }}
+															{% if other_fee.fee_type == 'AVOIR COMPAGNIE' %}
+																<br>{{ other_fee.id|route_avoir }}
+															{% endif %}
 														{% endif %}
-														
-														
-													{% else %}
-														{{ other_fee|ancillary_passenger }}
-														{% if other_fee.fee_type == 'AVOIR COMPAGNIE' %}
-															<br>{{ other_fee.id|route_avoir }}
-														{% endif %}
-													{% endif %}
-													
+													{% endwith %}
+
 												</td>
 													
 												{% else %}
@@ -2584,6 +2586,86 @@
 	</div>
 </div>
 
+<div class="modal fade show" id="modalBusInfo" aria-modal="true" >
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Informations Bus</h4>
+				<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">x</span>
+				</button>
+			</div>
 
+			<div class="modal-body">
+				<div class="input-group mb-2">
+					<div class="col-md-4">
+						<label for="class">Trajet</label>
+					</div>
+				
+					<div class="col-md-8">
+						<input type="text" class="form-control" id="bus_trajet" name="time">
+					</div>
+				</div>
+
+				<div class="input-group mb-2">
+				
+					<div class="col-md-4"> 
+						<label for="taxiName">Classe</label>
+					</div>
+					<div class="col-md-8"> 
+						<div id='select-bus-supplier' class='hidden-visually' aria-live="polite"></div>
+							<div class="busselect" id="myBusSupplier">
+								<input type="text" id="bus-supplier-input" class="select-css">
+								<span class="custom-select-icons">
+									<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16" focusable="false" aria-hidden="true" id="icon-circle-down" class="icon" role="img">
+										<path d="M16 8c0-4.418-3.582-8-8-8s-8 3.582-8 8 3.582 8 8 8 8-3.582 8-8zM1.5 8c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5-2.91 6.5-6.5 6.5-6.5-2.91-6.5-6.5z"></path>
+										<path d="M4.957 5.543l-1.414 1.414 4.457 4.457 4.457-4.457-1.414-1.414-3.043 3.043z"></path>
+									</svg>
+																	
+								</span>
+								<ul class="bus-supplier-options" id="bus-supplier-list"></ul>
+							</div>
+					</div>
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-4"> 
+						<label for="date">Date</label>
+					</div>
+					<div class="col-md-8"> 
+						<input type="date" class="form-control" id="busDate" name="date">
+					</div>
+					
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-4">
+						<label for="time">Heure de départ</label>
+					</div>
+				
+					<div class="col-md-8">
+						<input type="time" class="form-control" id="busDepartureTime" name="time">
+					</div>
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-4">
+						<label for="time">Heure d'arrivée</label>
+					</div>
+				
+					<div class="col-md-8">
+						<input type="time" class="form-control" id="busArrivalTime" name="time">
+					</div>
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+				<button type="button" class="btn btn-success" id="ConfirmAddBus" data-dismiss="modal">Confirmer
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 {% endblock content %}

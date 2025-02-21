@@ -1638,7 +1638,7 @@ def import_product(request, pnr_id):
                     passenger_segment.save()
 
             # cas pour l'HOTEL et TAXI
-            if product[0] == '10' or product[0] == '12':
+            if product[0] in ['9','10','12']:
 
                 other_fee = OthersFee(designation=product[2], cost=product[3], tax=product[4], total=product[5],
                                         pnr=pnr, fee_type=product[1], reference=product[7], emitter=emitter,
@@ -2058,13 +2058,18 @@ def get_service_supplier_list(request):
         hSupplier = []
         for supplier in hotel_suppliers:
             hSupplier.append({"id":supplier.id,"name":supplier.name})
+
         taxi_suppliers = ServiceSupplier.objects.filter(service__id=12).all()
         tSupplier = []
         for supplier in taxi_suppliers:
             tSupplier.append({"id":supplier.id,"name":supplier.name})
-        print("------------- HOTEL SUPPLIER --------------: ",hotel_suppliers)
 
-        context = {"hotel_suppliers":hSupplier,"taxi_suppliers":tSupplier}
+        bus_classes = ServiceSupplier.objects.filter(service__id=9).all()
+        busClass = []
+        for supplier in bus_classes:
+            busClass.append({"id":supplier.id,"name":supplier.name})
+
+        context = {"hotel_suppliers":hSupplier,"taxi_suppliers":tSupplier,"bus_classes":busClass}
         return JsonResponse(context)
     
 @login_required(login_url='index')

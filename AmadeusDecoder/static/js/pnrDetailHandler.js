@@ -682,6 +682,24 @@ document
           document.getElementById('ticket-avoir').style.borderColor = 'red';
         }
       }
+
+      // Récupération des informations supplémentaires concernant le bus s'il y en a, dans sessionStorage
+      if(ProductDropdown.value == 9 && sessionStorage.getItem('bus_details')){
+        bus_details = sessionStorage.getItem('bus_details');
+        listNewProduct.push(
+          ProductDropdown.value,
+          ProductTypeInitiale.textContent,
+          designation,
+          parseFloat(ProductTranspInput.value).toFixed(2),
+          parseFloat(ProductTaxInput.value).toFixed(2),
+          (
+            parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
+          ).toFixed(2),
+          ProductpassInput.value,
+          "",
+          bus_details
+        );
+      } 
       
       // Récupération des informations supplémentaires concernant l'hôtel s'il y en a, dans sessionStorage
       if(ProductDropdown.value == 10 && sessionStorage.getItem('hotel_info')){
@@ -748,7 +766,7 @@ document
           // supprimer les informations supplémentauires des taxi et hotels dans sessionStorage
           if(sessionStorage.getItem('taxi_details')){sessionStorage.removeItem('taxi_details');}
           if(sessionStorage.getItem('hotel_info')){sessionStorage.removeItem('hotel_info');}
-          
+          if(sessionStorage.getItem('bus_details')){sessionStorage.removeItem('bus_details');}
         },
         error: (response) => {
           console.log(response);
@@ -1400,6 +1418,10 @@ $('#SelectProduct').on('change', function(){
 
   if(select_product == 12){
     $('#modalTaxiInfo').modal("show");
+  }
+
+  if(select_product == 9){
+    $('#modalBusInfo').modal("show");
   }
 
 });

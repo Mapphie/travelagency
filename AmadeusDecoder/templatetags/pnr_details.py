@@ -9,7 +9,7 @@ from django.db.models import Q
 import json
 import traceback
 from AmadeusDecoder.models.invoice.Fee import OthersFee
-
+from AmadeusDecoder.models.invoice.Fee import Product
 import AmadeusDecoder.utilities.configuration_data as configs
 
 from AmadeusDecoder.models.pnr.Pnr import Pnr
@@ -1774,22 +1774,40 @@ def get_check_passenger_missing(pnr_id, client_id):
 
     return count_passenger_missing
 
+@register.filter(name='check_other_fee')
+def check_other_fee(other_fee_id):
+    other_fee = OthersFee.objects.get(id=other_fee_id)
+    product = Product.objects.filter(designation= other_fee.designation).first()
+    if product.code == 'SLOT':
+        return True
+    return False
+
 
 @register.filter(name='get_hotel_details')
 def get_hotel_details(other_fee_id):
     other_fee = OthersFee.objects.get(id=other_fee_id)
-    name = other_fee.value.get('name')
-    arrival = datetime.strptime(other_fee.value.get('arrivalDate'), "%Y-%m-%d") 
-    departure = datetime.strptime(other_fee.value.get('departureDate'), "%Y-%m-%d") 
+    if other_fee.value:
+        name = other_fee.value.get('name')
+        arrival = datetime.strptime(other_fee.value.get('arrivalDate'), "%Y-%m-%d") 
+        departure = datetime.strptime(other_fee.value.get('departureDate'), "%Y-%m-%d") 
 
-    return {"name":name, "arrival": arrival.strftime("%d/%m/%Y"), "departure": departure.strftime("%d/%m/%Y")}
+        return {"name":name, "arrival": arrival.strftime("%d/%m/%Y"), "departure": departure.strftime("%d/%m/%Y")}
 
-@register.filter(name='get_taxi_details')
-def get_taxi_details(other_fee_id):
+@register.filter(name='get_transport_details')
+def get_transport_details(other_fee_id):
     other_fee = OthersFee.objects.get(id=other_fee_id)
-    trajet = other_fee.value.get('trajet')
-    date = other_fee.value.get('date')
-    arrivaltime = other_fee.value.get('arrivalTime')
-    departuretime = other_fee.value.get('departureTime')
+    product = Product.objects.filter(designation= other_fee.designation).first()
 
-    return {"trajet":trajet,"date":date, "arrivaltime": arrivaltime, "departuretime": departuretime}
+    if other_fee.value:
+        if product.id in [12,15]:
+            trajet = other_fee.value.get('trajet')
+            date = other_fee.value.get('date')
+            arrivaltime = other_fee.value.get('arrivalTime')
+            departuretime = other_fee.value.get('departureTime')
+        if product.id in [8,9,14]:
+            trajet = other_fee.value.get('trajet') +'/ Classe: '+ other_fee.value.get('classe')
+            date = other_fee.value.get('date')
+            arrivaltime = other_fee.value.get('arrivalTime')
+            departuretime = other_fee.value.get('departureTime')
+
+        return {"trajet":trajet,"date":date, "arrivaltime": arrivaltime, "departuretime": departuretime}
