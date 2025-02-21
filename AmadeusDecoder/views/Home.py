@@ -1170,9 +1170,19 @@ def get_order(request, pnr_id):
                                         'Client' : item.value.get('client')
                                     }
 
-                                if item.designation == 'TAXI':
+                                if item.designation == ['TAXI','TRANSFERT']:
                                     _ht_details= { 
-                                        'Type': 'TAXI',
+                                        'Type': 'TAXI' if item.designation == 'TAXI' else 'TRANSFERT' if item.designation == 'TRANSFERT',
+                                        'Trajet': item.value.get('trajet'),
+                                        'Date': item.value.get('date'),
+                                        'ArrivalTime': item.value.get('arrivalTime'),
+                                        'DepartureTime': item.value.get('departureTime'),
+                                        
+                                    }
+
+                                if item.designation in ['BUS','SNCF TGV AIR','TRAIN : SNCF']:
+                                    _ht_details= { 
+                                        'Type': 'TRAIN : SNCF' if item.designation == 'TRAIN : SNCF' else 'SNCF TGV AIR' if item.designation == 'SNCF TGV AIR' else 'BUS' if item.designation == 'BUS',
                                         'Trajet': item.value.get('trajet'),
                                         'Date': item.value.get('date'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
