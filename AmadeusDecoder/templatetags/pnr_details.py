@@ -1775,3 +1775,21 @@ def get_check_passenger_missing(pnr_id, client_id):
     return count_passenger_missing
 
 
+@register.filter(name='get_hotel_details')
+def get_hotel_details(other_fee_id):
+    other_fee = OthersFee.objects.get(id=other_fee_id)
+    name = other_fee.value.get('name')
+    arrival = datetime.strptime(other_fee.value.get('arrivalDate'), "%Y-%m-%d") 
+    departure = datetime.strptime(other_fee.value.get('departureDate'), "%Y-%m-%d") 
+
+    return {"name":name, "arrival": arrival.strftime("%d/%m/%Y"), "departure": departure.strftime("%d/%m/%Y")}
+
+@register.filter(name='get_taxi_details')
+def get_taxi_details(other_fee_id):
+    other_fee = OthersFee.objects.get(id=other_fee_id)
+    trajet = other_fee.value.get('trajet')
+    date = other_fee.value.get('date')
+    arrivaltime = other_fee.value.get('arrivalTime')
+    departuretime = other_fee.value.get('departureTime')
+
+    return {"trajet":trajet,"date":date, "arrivaltime": arrivaltime, "departuretime": departuretime}

@@ -1282,12 +1282,12 @@ if (count__ticketHaveNoPassenger.length > 0) {
 $('#ticket-avoir').hide();
 $('#select_Passenger').hide();
 $('#multipleSelect').hide();
-
-
-
+$('#ht_details').hide();
 
 
 $('#SelectProduct').on('change', function(){
+  console.log("SELECT PRODUCT CLICKED");
+  
   select_product = $('#SelectProduct').val();
 
   if(select_product == 19){
@@ -1392,6 +1392,15 @@ $('#SelectProduct').on('change', function(){
 
   }
 
+  if(select_product == 10){
+    console.log("HOTEL MODAL IS OPEN");
+    
+    $('#modalHotelInfo').modal("show");
+  }
+
+  if(select_product == 12){
+    $('#modalTaxiInfo').modal("show");
+  }
 
 });
 

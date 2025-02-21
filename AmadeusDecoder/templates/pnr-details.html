@@ -1001,10 +1001,32 @@
 												<td><span class="billet">{{ other_fee.designation }}</span></td>
 												{% if other_fee|ancillary_passenger is not None %}
 												<td>
-													{{ other_fee|ancillary_passenger }}
-													{% if other_fee.fee_type == 'AVOIR COMPAGNIE' %}
-														<br>{{ other_fee.id|route_avoir }}
+													{% if other_fee.designation == 'HOTEL' or other_fee.designation == 'TAXI' %}
+														{% if other_fee.designation == 'HOTEL' %}
+															{% with other_fee.id|get_hotel_details as ht_details %}
+																<p>Nom : {{ ht_details.name }}
+																<br>Arrivée : {{ ht_details.arrival }}
+																<br>Sortie : {{ ht_details.departure }}
+																</p>
+															{% endwith %}
+
+														{% else %}
+															{% with other_fee.id|get_taxi_details as tx_details %}
+																<p>Trajet : {{ tx_details.trajet }}
+																<br>Départ : {{ tx_details.date }} {{ tx_details.departuretime }}
+																<br>Arrivée :{{ tx_details.date }} {{ tx_details.arrivaltime }}
+																</p>
+															{% endwith %}
+														{% endif %}
+														
+														
+													{% else %}
+														{{ other_fee|ancillary_passenger }}
+														{% if other_fee.fee_type == 'AVOIR COMPAGNIE' %}
+															<br>{{ other_fee.id|route_avoir }}
+														{% endif %}
 													{% endif %}
+													
 												</td>
 													
 												{% else %}
@@ -1218,6 +1240,7 @@
 												</td>
 												<td>
 													<select id="select_Passenger" class="form-control form-control-sm" ></select>
+													<div id="ht_details"></div>
 												</td>
 												<td><input type="number" step="0.01" name="transport-input-line" class="form-control form-control-sm" id="transport-input-line"
 													placeholder="Transport" name="transport-input-line" style="text-align:right;" value=""></td>
@@ -1230,6 +1253,7 @@
  
 														<select id="multipleSelect" multiple name="native-select" placeholder="Segment" data-search="false" data-silent-initial-value-set="true">
 														</select>
+													<div id="ht_passenger"></div>
 												</td>
 												<td></td>
 												<td></td>
@@ -2465,9 +2489,7 @@
 					<div class="col-md-4"> 
 						<input type="date" class="form-control" id="arrivalDate" name="arrival_date">
 					</div>
-					<div class="col-md-4">
-						<input type="time" class="form-control" id="arrivalTime" name="arrival_time">
-					</div>
+					
 				</div>
 				<div class="input-group mb-2">
 					<div class="col-md-4">
@@ -2476,9 +2498,7 @@
 					<div class="col-md-4">
 						<input type="date" class="form-control" id="departureDate" name="departure_date">
 					</div>
-					<div class="col-md-4">
-						<input type="time" class="form-control" id="departureTime" name="departure_time">
-					</div>
+					
 				</div>
 
 				
@@ -2506,8 +2526,9 @@
 
 			<div class="modal-body">
 				<div class="input-group mb-2">
+				
 					<div class="col-md-4"> 
-						<label for="taxiName">Nom</label>
+						<label for="taxiName">Trajet</label>
 					</div>
 					<div class="col-md-8"> 
 						<div id='select-taxi-supplier' class='hidden-visually' aria-live="polite"></div>
@@ -2535,29 +2556,21 @@
 				</div>
 				<div class="input-group mb-2">
 					<div class="col-md-4">
-						<label for="time">Heure</label>
+						<label for="time">Heure de départ</label>
 					</div>
 				
 					<div class="col-md-8">
-						<input type="time" class="form-control" id="taxiTime" name="time">
+						<input type="time" class="form-control" id="taxiDepartureTime" name="time">
 					</div>
 				</div>
 
 				<div class="input-group mb-2">
 					<div class="col-md-4">
-						<label for="passengers">Passagers</label>
+						<label for="time">Heure d'arrivée</label>
 					</div>
+				
 					<div class="col-md-8">
-						<input type="number" class="form-control" id="passagers" name="passenger" value="1" min="1" max="200" step="1"  maxlength="3">
-					</div>
-				</div>
-
-				<div class="input-group mb-2">
-					<div class="col-md-4">
-						<label for="Rooms">Départ</label>
-					</div>
-					<div class="col-md-8"> 
-						<input type="text" class="form-control" id="location" name="location" >
+						<input type="time" class="form-control" id="taxiArrivalTime" name="time">
 					</div>
 				</div>
 				

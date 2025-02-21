@@ -1150,6 +1150,7 @@ def get_order(request, pnr_id):
                     type_other_fee = ''
                     if order.other_fee is not None and order.other_fee.other_fee_status == 1:
                         other_fee = OthersFee.objects.filter(pk=order.other_fee.id)
+                        _ht_details = None
                         for item in other_fee:
                             if item.fee_type == 'EMD' or item.fee_type == 'TKT' or item.fee_type == 'Cancellation' or item.fee_type == 'AVOIR COMPAGNIE':
                                 type_other_fee = item.fee_type
@@ -1166,19 +1167,17 @@ def get_order(request, pnr_id):
                                         'Name': item.value.get('name'),
                                         'ArrivalDate': item.value.get('arrivalDate'),
                                         'DepartureDate': item.value.get('departureDate'),
-                                        'ArrivalTime': item.value.get('arrivalTime'),
-                                        'DepartureTime': item.value.get('departureTime'),
                                         'Client' : item.value.get('client')
                                     }
 
                                 if item.designation == 'TAXI':
                                     _ht_details= { 
                                         'Type': 'TAXI',
-                                        'Name': item.value.get('name'),
+                                        'Trajet': item.value.get('trajet'),
                                         'Date': item.value.get('date'),
-                                        'Heure': item.value.get('heure'),
-                                        'localisation': item.value.get('location'),
-                                        'passagers': item.value.get('passagers'),
+                                        'ArrivalTime': item.value.get('arrivalTime'),
+                                        'DepartureTime': item.value.get('departureTime'),
+                                        'Classe': item.value.get('classe'),
                                         
                                     }
                                 print(_ht_details)

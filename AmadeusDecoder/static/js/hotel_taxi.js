@@ -3,17 +3,16 @@ const taxi_supplier_list = [];
 const departure_location_list = [];
 var pnr_id = document.getElementById('pnr_id').getAttribute('data-id');
 
+$('#modalHotelInfo').on('hidden.bs.modal', function () {
+  console.log("HOTEL MODAL IS CLOSED");
+  
+  $(this).removeAttr('aria-hidden');
+});
+
 
 $('#SelectProduct').on('change', function(){
   select_product = $('#SelectProduct').val();
 
-  if(select_product == 10){
-    $('#modalHotelInfo').modal("show");
-  }
-
-  if(select_product == 12){
-    $('#modalTaxiInfo').modal("show");
-  }
 });
 
 function updateSelectHotelOptions() {
@@ -144,266 +143,202 @@ $('#modalTaxiInfo').on('show.bs.modal', function(){
   updateSelectHotelOptions();
 });
 
-// Gestion des écènements pour le choix du fournisseur d'hôtel
-$(document).ready(function(){
-    // SETUP
-    // /////////////////////////////////
-    // assign names to things we'll need to use more than once
-    const hotelSupplier = document.querySelector('#myHotelSupplier'); // the input, svg and ul as a group
-    const hsInput = hotelSupplier.querySelector('input');
-    const hsList = hotelSupplier.querySelector('ul');
-    const hsIcons = hotelSupplier.querySelector('svg');
-    // const csStatus = document.querySelector('#custom-select-status');
-  
-    // when JS is loaded, set up our starting point
-    // if JS fails to load, the custom select remains a plain text input
-    // create and set start point for the state tracker
-    let hsState = "initial";
-    // inform assistive tech (screen readers) of the names & roles of the elements in our group
-    hotelSupplier.setAttribute('role', 'combobox') ;
-    hotelSupplier.setAttribute('aria-haspopup', 'listbox') ;
-    hotelSupplier.setAttribute('aria-owns', 'hotel-supplier-list') ;// container owns the list...
-    hsInput.setAttribute('aria-autocomplete', 'both') ;
-    hsInput.setAttribute('aria-controls', 'hotel-supplier-list') ;// ...but the input controls it
-    hsList.setAttribute('role', 'listbox') ;
-  
-  
-    // EVENTS
-    // /////////////////////////////////
-    hotelSupplier.addEventListener('click', function(e) {
-      const hsCurrentFocus = hsFindFocus()
-      switch(hsState) {
-        case 'initial' : // if state = initial, toggleOpen and set state to opened
-          hsToggleList('Open')
-          setState('opened')
-          break
-        case 'opened':
-          // if state = opened and focus on input, toggleShut and set state to initial
-          if (hsCurrentFocus === hsInput) {
-            hsToggleList('Shut')
-            setState('initial')
-          } else if (hsCurrentFocus.tagName === 'LI') {
-            // if state = opened and focus on list, makeChoice, toggleShut and set state to closed
-            makeChoice(hsCurrentFocus)
-            hsToggleList('Shut')
-            setState('closed')
-          }
-          break
-        case 'filtered':
-          // if state = filtered and focus on list, makeChoice and set state to closed
-          if (hsCurrentFocus.tagName === 'LI') {
-            makeChoice(hsCurrentFocus)
-            hsToggleList('Shut')
-            setState('closed')
-          } // if state = filtered and focus on input, do nothing (wait for next user input)
-  
-          break
-        case 'closed': // if state = closed, toggleOpen and set state to filtered? or opened?
-          hsToggleList('Open')
-          setState('filtered')
-          break
+// Gestion des éVènements pour le choix du fournisseur d'hôtel
+$(document).ready(function () {
+  // SETUP
+  const hotelSupplier = document.querySelector('#myHotelSupplier');
+  const hsInput = hotelSupplier.querySelector('input');
+  const hsList = hotelSupplier.querySelector('ul');
+
+  let hsState = "initial";
+  let hotel_supplier_list = []; // Assurez-vous que cette variable est définie ailleurs dans votre code
+
+  // Configuration des attributs ARIA
+  hotelSupplier.setAttribute('role', 'combobox');
+  hotelSupplier.setAttribute('aria-haspopup', 'listbox');
+  hotelSupplier.setAttribute('aria-owns', 'hotel-supplier-list');
+  hsInput.setAttribute('aria-autocomplete', 'both');
+  hsInput.setAttribute('aria-controls', 'hotel-supplier-list');
+  hsList.setAttribute('role', 'listbox');
+
+  // EVENEMENTS
+  hotelSupplier.addEventListener('click', function (e) {
+      const hsCurrentFocus = hsFindFocus();
+      switch (hsState) {
+          case 'initial':
+              hsToggleList('Open');
+              setState('opened');
+              break;
+          case 'opened':
+              if (hsCurrentFocus === hsInput) {
+                  hsToggleList('Shut');
+                  setState('initial');
+              } else if (hsCurrentFocus.tagName === 'LI') {
+                  makeChoice(hsCurrentFocus);
+                  hsToggleList('Shut');
+                  setState('closed');
+              }
+              break;
+          case 'filtered':
+              if (hsCurrentFocus.tagName === 'LI') {
+                  makeChoice(hsCurrentFocus);
+                  hsToggleList('Shut');
+                  setState('closed');
+              }
+              break;
+          case 'closed':
+              hsToggleList('Open');
+              setState('filtered');
+              break;
       }
-    })
-  
-    hotelSupplier.addEventListener('keyup', function(e) {
-      doKeyAction(e.key)
-    })
-  
-    document.addEventListener('click', function(e) {
+  });
+
+  hsInput.addEventListener('keyup', function (e) {
+      doKeyAction(e.key);
+  });
+
+  document.addEventListener('click', function (e) {
       if (!e.target.closest('#myHotelSupplier')) {
-        // click outside of the custom group
-        hsToggleList('Shut')
-        setState('initial')
-      } 
+        
+        hsToggleList('Shut');
+        setState('closed');
+      }
+  });
+
+  // FONCTIONS
+  function hsToggleList(whichWay) {
+      if (whichWay === 'Open') {        
+        hsList.classList.remove('hidden-all');
+        hotelSupplier.setAttribute('aria-expanded', 'true');
+      } else {
+          hsList.classList.add('hidden-all');
+          hotelSupplier.setAttribute('aria-expanded', 'false');
+      }
+  }
+
+  function hsFindFocus() {
+      return document.activeElement;
+  }
+
+  function makeChoice(whichOption) {
+      hsInput.dataset.id = whichOption.dataset.id;
+      hsInput.value = whichOption.textContent;
+      hsMoveFocus(document.activeElement, 'input');
+      setState('closed');
+  }
+
+  function setState(newState) {
+      hsState = newState;
+  }
+
+  function doKeyAction(whichKey) {
+      const hsCurrentFocus = hsFindFocus();
+      switch (whichKey) {
+          case 'Enter':
+              let inputSupplier = hsInput.value.trim();
+              if (inputSupplier !== '' && !hotel_supplier_list.some(s => s.name === inputSupplier)) {
+                  hotel_supplier_list.push({ 'id': 0, 'name': inputSupplier });
+                  refreshSupplierList();
+              }
+              hsToggleList('Open');
+              setState('opened');
+              break;
+          case 'Escape':
+              if (hsState === 'opened' || hsState === 'filtered') {
+                  hsToggleList('Shut');
+                  setState('initial');
+              }
+              break;
+          default:
+              if (hsState !== 'closed') {
+                  hsToggleList('Open');
+                  hsDoFilter();
+                  setState('filtered');
+              }
+              break;
+      }
+  }
+
+  function hsDoFilter() {
+      const terms = hsInput.value.trim().toUpperCase();
+      const items = document.querySelectorAll('.hotel-supplier-item');
+      items.forEach(option => {
+          option.style.display = option.textContent.toUpperCase().startsWith(terms) ? "" : "none";
+      });
+      setState('filtered');
+  }
+
+  function hsMoveFocus(fromHere, toThere) {
+    var csOptions = document.querySelectorAll('.hotel-supplier-item');
+    var aOptions = Array.from(csOptions);
+    // grab the currently showing options, which might have been filtered
+    const hsCurrentOptions = aOptions.filter(function(option) {
+      if (option.style.display === '') {
+        return true
+      }
     })
-    
-      // FUNCTIONS 
-      // /////////////////////////////////
-    
-      function hsToggleList(whichWay) {
-        if (whichWay === 'Open') {
-          hsList.classList.remove('hidden-all')
-          hotelSupplier.setAttribute('aria-expanded', 'true')
-        } else { // === 'Shut'
-          hsList.classList.add('hidden-all')
-          hotelSupplier.setAttribute('aria-expanded', 'false')
+    // don't move if all options have been filtered out
+    if (hsCurrentOptions.length === 0) {
+      return
+    }
+    if (toThere === 'input') {
+      hsInput.focus()
+    }
+    // possible start points
+    switch(fromHere) {
+      case hsInput:
+        if (toThere === 'forward') {
+          hsCurrentOptions[0].focus()
+        } else if (toThere === 'back') {
+          hsCurrentOptions[hsCurrentOptions.length - 1].focus()
         }
-      }
-    
-      function hsFindFocus() {
-        const focusPoint = document.activeElement
-        return focusPoint
-      }
-    
-      function hsMoveFocus(fromHere, toThere) {
-        var csOptions = document.querySelectorAll('.hotel-supplier-item');
-        var aOptions = Array.from(csOptions);
-        // grab the currently showing options, which might have been filtered
-        const hsCurrentOptions = aOptions.filter(function(option) {
-          if (option.style.display === '') {
-            return true
-          }
-        })
-        // don't move if all options have been filtered out
-        if (hsCurrentOptions.length === 0) {
-          return
-        }
-        if (toThere === 'input') {
+        break
+      case csOptions[0]: 
+        if (toThere === 'forward') {
+          hsCurrentOptions[1].focus()
+        } else if (toThere === 'back') {
           hsInput.focus()
         }
-        // possible start points
-        switch(fromHere) {
-          case hsInput:
-            if (toThere === 'forward') {
-              hsCurrentOptions[0].focus()
-            } else if (toThere === 'back') {
-              hsCurrentOptions[hsCurrentOptions.length - 1].focus()
-            }
-            break
-          case csOptions[0]: 
-            if (toThere === 'forward') {
-              hsCurrentOptions[1].focus()
-            } else if (toThere === 'back') {
-              hsInput.focus()
-            }
-            break
-          case csOptions[csOptions.length - 1]:
-            if (toThere === 'forward') {
-              hsCurrentOptions[0].focus()
-            } else if (toThere === 'back') {
-              hsCurrentOptions[hsCurrentOptions.length - 2].focus()
-            }
-            break
-          default: // middle list or filtered items 
-            const currentItem = hsFindFocus()
-            const whichOne = hsCurrentOptions.indexOf(currentItem)
-            if (toThere === 'forward') {
-              const nextOne = hsCurrentOptions[whichOne + 1]
-              nextOne.focus()
-            } else if (toThere === 'back' && whichOne > 0) {
-              const previousOne = hsCurrentOptions[whichOne - 1]
-              previousOne.focus()
-            } else { // if whichOne = 0
-              hsInput.focus()
-            }
-            break
+        break
+      case csOptions[csOptions.length - 1]:
+        if (toThere === 'forward') {
+          hsCurrentOptions[0].focus()
+        } else if (toThere === 'back') {
+          hsCurrentOptions[hsCurrentOptions.length - 2].focus()
         }
-      }
-    
-      function hsDoFilter() {
-    
-        const terms = hsInput.value
-        var csOptions = document.querySelectorAll('.hotel-supplier-item');
-        var aOptions = Array.from(csOptions);
-    
-        const hsFilteredOptions = aOptions.filter(function(option) {
-          if (option.innerText.toUpperCase().startsWith(terms.toUpperCase())) {
-            return true
-          }
-        })
-        csOptions.forEach(option => option.style.display = "none")
-        hsFilteredOptions.forEach(function(option) {
-          option.style.display = ""
-        })
-        setState('filtered')
-      }
-    
-
-      function makeChoice(whichOption) {
-        console.log('whichOption : ',whichOption);
-        hsInput.setAttribute('data-id', whichOption.getAttribute('data-id'));
-        console.log('---- data-id :',whichOption.getAttribute('data-id') );
-        hsInput.setAttribute('value',whichOption.textContent);
-        hsMoveFocus(document.activeElement, 'input')
-        setState('closed');
-        
-        // update aria-selected, if using
-      }
-    
-      function setState(newState) {
-        switch (newState) {
-          case 'initial': 
-            hsState = 'initial'
-            break
-          case 'opened': 
-            hsState = 'opened'
-            break
-          case 'filtered':
-            hsState = 'filtered'
-            break
-          case 'closed': 
-            hsState = 'closed'
+        break
+      default: // middle list or filtered items 
+        const currentItem = hsFindFocus()
+        const whichOne = hsCurrentOptions.indexOf(currentItem)
+        if (toThere === 'forward') {
+          const nextOne = hsCurrentOptions[whichOne + 1]
+          nextOne.focus()
+        } else if (toThere === 'back' && whichOne > 0) {
+          const previousOne = hsCurrentOptions[whichOne - 1]
+          previousOne.focus()
+        } else { // if whichOne = 0
+          hsInput.focus()
         }
-        // console.log({hsState})
-      }
-    
-      function doKeyAction(whichKey) {
-        const hsCurrentFocus = hsFindFocus()
-  
-        switch(whichKey) {
-          case 'Enter':
-            var inputsupplier = $("#hotel-supplier-input").val();
-            if (inputsupplier.trim() !== '') {
-              hotel_supplier_list.push({'id':0,'name':inputsupplier});
-              var parent_hotel = document.getElementById("hotel-supplier-list")
-              var hotel_childs = document.querySelectorAll('.hotel-supplier-item')
-              if (hotel_childs) {
-                hotel_childs.forEach(element => {
-                  element.remove();
-                });
+        break
+    }
+  }
 
-              }
-  
-              hotel_supplier_list.map((supplier)=>{
-                var newli = document.createElement("li");
-                newli.className="hotel-supplier-item";
-                newli.setAttribute('data-id',supplier['id']);
-                newli.textContent = supplier['name'];
-                newli.setAttribute('role', 'option') ;
-                newli.setAttribute('tabindex', "-1") ;
-                parent_hotel.append(newli);
-              })
 
-              console.log('hotel_supplier_list : ', hotel_supplier_list);
+  function refreshSupplierList() {
+      const parent_hotel = document.getElementById("hotel-supplier-list");
+      parent_hotel.innerHTML = ""; // Clear list before adding new elements
+      hotel_supplier_list.forEach(supplier => {
+          const newLi = document.createElement("li");
+          newLi.className = "hotel-supplier-item";
+          newLi.dataset.id = supplier.id;
+          newLi.textContent = supplier.name;
+          newLi.setAttribute('role', 'option');
+          newLi.setAttribute('tabindex', "-1");
+          parent_hotel.append(newLi);
+      });
+  }
+});
 
-            }
-  
-            hsToggleList('Open')
-            setState('opened')
-            break
-    
-          case 'Escape':
-            // if state = initial, do nothing
-            // if state = opened or filtered, set state to initial
-            // if state = closed, do nothing
-            if (hsState === 'opened' || hsState === 'filtered') {
-              hsToggleList('Shut')
-              setState('initial')
-            }
-            break
-          default:
-            if (hsState === 'initial') {
-              // if state = initial, toggle open, hsDoFilter and set state to filtered
-              hsToggleList('Open')
-              hsDoFilter()
-              setState('filtered')
-            } else if (hsState === 'opened') {
-              // if state = opened, hsDoFilter and set state to filtered
-              hsDoFilter()
-              setState('filtered')
-            } else if (hsState === 'closed') {
-              // if state = closed, hsDoFilter and set state to filtered
-              hsDoFilter()
-              setState('filtered')
-            } else { // already filtered
-              hsDoFilter()
-            }
-            break 
-        }
-      }
-  
-  })
-  
 // Gestion des écènements pour le choix du fournisseur de taxi
 $(document).ready(function(){ 
   // SETUP
@@ -480,10 +415,10 @@ $(document).ready(function(){
 
   
     // FUNCTIONS 
-    // /////////////////////////////////
+    /////////////////////////////////
   
     function tsToggleList(whichWay) {
-      console.log("whichway : ", whichWay);
+      console.log("whichway taxi: ", whichWay);
       if (whichWay === 'Open') {
         tsList.classList.remove('hidden-all')
         taxiSupplier.setAttribute('aria-expanded', 'true')
@@ -663,13 +598,28 @@ $(document).ready(function(){
 
 // Enregistrer la reservation d'hôtel
 $('#ConfirmAddHotel').on('click', function(){
-  var name = document.getElementById('hotel-supplier-input').value;
-  var arrivalDate = document.getElementById('arrivalDate').value;
-  var arrivalTime = document.getElementById('arrivalTime').value;
-  var departureDate = document.getElementById('departureDate').value;
-  var departureTime = document.getElementById('departureTime').value;
-  var hotel_client = document.getElementById('hotel_client').value;
+  const name = document.getElementById('hotel-supplier-input').value;
+  const arrivalDate = document.getElementById('arrivalDate').value;
+  const departureDate = document.getElementById('departureDate').value;
+  const hotel_client = document.getElementById('hotel_client').value;
 
+  if (!name || !arrivalDate || !departureDate || !hotel_client) {
+    toastr.error('Veuillez remplir tous les champs.');
+    return;
+  }
+
+  const formattedArrivalDate = (new Date(arrivalDate)).toLocaleDateString('fr-FR');
+  const formattedDepartureDate = (new Date(departureDate)).toLocaleDateString('fr-FR');
+
+  $('#ht_details').show();
+
+  $('#ht_details').append(`<p>Hotel :${name}<br/>`);
+  $('#ht_details').append(`Arrivée : ${formattedArrivalDate}</br>`);
+  $('#ht_details').append(`Sortie : ${formattedDepartureDate}</p>`);
+
+  $('#passenger_segment').hide()
+  $('#ht_passenger').show();
+  $('#ht_passenger').append(`<p>Client :${hotel_client}</p>`);
 
  // Enregistrer le fournisseur s'il est nouveau    
   hotel_input = document.getElementById('hotel-supplier-input')    
@@ -680,7 +630,7 @@ $('#ConfirmAddHotel').on('click', function(){
   }
 
   // Enregistrer toutes les informations dans sessionStorage
-  hotel_info = {'name':name,'arrivalDate':arrivalDate,'arrivalTime':arrivalTime,'departureDate':departureDate,'departureTime':departureTime,'client':hotel_client};
+  hotel_info = {'name':name,'arrivalDate':arrivalDate,'departureDate':departureDate,'client':hotel_client};
   sessionStorage.setItem('hotel_info',JSON.stringify(hotel_info));
 
   toastr.success('Informations ajoutées.')
@@ -690,22 +640,32 @@ $('#ConfirmAddHotel').on('click', function(){
 
 // Enregistrer la reservation de taxi
 $('#ConfirmAddTaxi').on('click', function(){ 
-  var name = document.getElementById('taxi-supplier-input').value;
   var taxiDate = document.getElementById('taxiDate').value;
-  var taxiTime = document.getElementById('taxiTime').value;
-  var passagers = document.getElementById('passagers').value;
-  var location = document.getElementById('location').value;
+  var trajet = document.getElementById('taxi-supplier-input').value;
+  var taxiDepartureTime = document.getElementById('taxiDepartureTime').value;
+  var taxiArrivalTime = document.getElementById('taxiArrivalTime').value;
+
   var pnr_id = document.getElementById('pnr_id').getAttribute('data-id');
+
+  const formattedtaxiDate = (new Date(taxiDate)).toLocaleDateString('fr-FR');
+
+  $('#ht_details').show();
+  $('#passenger_segment').hide()
+
+  $('#ht_details').append(`<p>Trajet :${trajet}<br/>`);
+  $('#ht_details').append(`Départ : ${formattedtaxiDate} ${taxiDepartureTime} </br>`);
+  $('#ht_details').append(`Arrivé : ${formattedtaxiDate} ${taxiArrivalTime} </p>`);
+
 
  // Enregistrer le fournisseur s'il est nouveau 
   taxi_input = document.getElementById('taxi-supplier-input')
   data_id = taxi_input.getAttribute('data-id');
   if (data_id == 0) {
-    addServiceSupplier(name,12);
+    addServiceSupplier(classe,12);
   }
   // Enregistrer toutes les informations dans sessionStorage
 
-  taxi_details = {'name':name,'date':taxiDate,'heure':taxiTime,'passagers':passagers,'depart':location};
+  taxi_details = {'trajet':trajet,'date':taxiDate,'departureTime':taxiDepartureTime,'arrivalTime':taxiArrivalTime};
   sessionStorage.setItem('taxi_details',JSON.stringify(taxi_details));
 
   toastr.success('Informations ajoutées.')
