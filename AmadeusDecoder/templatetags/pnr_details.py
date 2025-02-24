@@ -1778,7 +1778,7 @@ def get_check_passenger_missing(pnr_id, client_id):
 def check_other_fee(other_fee_id):
     other_fee = OthersFee.objects.get(id=other_fee_id)
     product = Product.objects.filter(designation= other_fee.designation).first()
-    if product.code == 'SLOT':
+    if product and product.code == 'SLOT':
         return True
     return False
 

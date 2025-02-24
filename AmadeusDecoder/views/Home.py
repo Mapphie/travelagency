@@ -1160,7 +1160,7 @@ def get_order(request, pnr_id):
                             print('------------------- HOTEL TAXI DETAILS -------------------------')
 
                             print('ITEM DESIGNATION : ',item.designation)
-                            if item.designation in ['HOTEL','TAXI']:
+                            if item.designation in ['HOTEL','TAXI','TRANSFERT','BUS','SNCF TGV AIR','TRAIN : SNCF']:
                                 if item.designation == 'HOTEL':
                                     _ht_details= { 
                                         'Type': 'HOTEL',
@@ -1170,19 +1170,19 @@ def get_order(request, pnr_id):
                                         'Client' : item.value.get('client')
                                     }
 
-                                if item.designation == ['TAXI','TRANSFERT']:
+                                if item.designation in ['TAXI','TRANSFERT']:
                                     _ht_details= { 
-                                        'Type': 'TAXI' if item.designation == 'TAXI' else 'TRANSFERT' if item.designation == 'TRANSFERT',
+                                        'Type': 'TAXI' if item.designation == 'TAXI' else 'TRANSFERT' ,
                                         'Trajet': item.value.get('trajet'),
                                         'Date': item.value.get('date'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
-                                        'DepartureTime': item.value.get('departureTime'),
+                                        'DepartureTime': item.value.get('departureTime')
                                         
                                     }
 
                                 if item.designation in ['BUS','SNCF TGV AIR','TRAIN : SNCF']:
                                     _ht_details= { 
-                                        'Type': 'TRAIN : SNCF' if item.designation == 'TRAIN : SNCF' else 'SNCF TGV AIR' if item.designation == 'SNCF TGV AIR' else 'BUS' if item.designation == 'BUS',
+                                        'Type': 'TRAIN : SNCF' if item.designation == 'TRAIN : SNCF' else 'SNCF TGV AIR' if item.designation == 'SNCF TGV AIR' else 'BUS',
                                         'Trajet': item.value.get('trajet'),
                                         'Date': item.value.get('date'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
@@ -1648,7 +1648,7 @@ def import_product(request, pnr_id):
                     passenger_segment.save()
 
             # cas pour l'HOTEL et TAXI
-            if product[0] in ['9','10','12']:
+            if product[0] in ['9','10','12','15','14','8']:
 
                 other_fee = OthersFee(designation=product[2], cost=product[3], tax=product[4], total=product[5],
                                         pnr=pnr, fee_type=product[1], reference=product[7], emitter=emitter,

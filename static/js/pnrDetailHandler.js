@@ -682,9 +682,10 @@ document
           document.getElementById('ticket-avoir').style.borderColor = 'red';
         }
       }
-
+      console.log('ProductDropdown.value : ',ProductDropdown.value);
+      
       // Récupération des informations supplémentaires concernant le bus s'il y en a, dans sessionStorage
-      if(ProductDropdown.value == 9 && sessionStorage.getItem('bus_details')){
+      if( [8,9,14].includes(Number(ProductDropdown.value)) && sessionStorage.getItem('bus_details')){
         bus_details = sessionStorage.getItem('bus_details');
         listNewProduct.push(
           ProductDropdown.value,
@@ -720,7 +721,7 @@ document
       }
 
       // Récupération des informations supplémentaires concernat le taxi s'il y en a, dans sessionStorage
-      if(ProductDropdown.value == 12 && sessionStorage.getItem('taxi_details')){
+      if([12,15].includes(Number(ProductDropdown.value)) && sessionStorage.getItem('taxi_details')){
         taxi_details = sessionStorage.getItem('taxi_details');
         listNewProduct.push(
           ProductDropdown.value,
@@ -1414,14 +1415,6 @@ $('#SelectProduct').on('change', function(){
     console.log("HOTEL MODAL IS OPEN");
     
     $('#modalHotelInfo').modal("show");
-  }
-
-  if(select_product == 12){
-    $('#modalTaxiInfo').modal("show");
-  }
-
-  if(select_product == 9){
-    $('#modalBusInfo').modal("show");
   }
 
 });

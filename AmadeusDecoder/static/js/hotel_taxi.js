@@ -4,10 +4,44 @@ const bus_supplier_list = [];
 const departure_location_list = [];
 var pnr_id = document.getElementById('pnr_id').getAttribute('data-id');
 
+$('#SelectProduct').on('change', function(){
+  console.log("SELECT PRODUCT CLICKED");
+  
+  select_product = Number($('#SelectProduct').val());
+  console.log(" PRODUCT ",select_product);
+  if ([12, 15].includes(select_product)) {
+    $('#modalTaxiInfo').modal("hide").modal("show");
+    if (select_product == 12){$('#modalTaxiTitle').text("Informations Taxi");}
+    if (select_product == 15){$('#modalTaxiTitle').text("Informations Transfet");}
+  }
+
+  if ([9, 8, 14].includes(select_product)) {
+    $('#modalBusInfo').modal("show");
+    if (select_product == 9){$('#modalBusTitle').text("Informations Bus");}
+    if (select_product == 8){$('#modalBusTitle').text("Informations SNCF TGV AIR");}
+    if (select_product == 14){$('#modalBusTitle').text("Informations TRAIN : SNCF");}
+
+  }
+
+});
+
 $('#modalHotelInfo').on('hidden.bs.modal', function () {
   console.log("HOTEL MODAL IS CLOSED");
-  
   $(this).removeAttr('aria-hidden');
+  if(!sessionStorage.getItem('hotel_info')){ $('#SelectProduct').val(''); }
+  
+});
+
+$('#modalTaxiInfo').on('hidden.bs.modal', function () {
+  console.log("Modal Taxi fermé");
+  if(!sessionStorage.getItem('taxi_details')){ $('#SelectProduct').val(''); }
+
+});
+
+$('#modalBusInfo').on('hidden.bs.modal', function () {
+  console.log("Modal Bus fermé");
+  if(!sessionStorage.getItem('bus_details')){ $('#SelectProduct').val(''); }
+
 });
 
 
@@ -441,7 +475,6 @@ $(document).ready(function(){
     /////////////////////////////////
   
     function tsToggleList(whichWay) {
-      console.log("whichway taxi: ", whichWay);
       if (whichWay === 'Open') {
         tsList.classList.remove('hidden-all')
         taxiSupplier.setAttribute('aria-expanded', 'true')
@@ -572,15 +605,7 @@ $(document).ready(function(){
 
             }
 
-            taxi_supplier_list.map((taxi_supp)=>{
-              var newli = document.createElement("li");
-              newli.className="taxi-supplier-item";
-              newli.setAttribute('data-id',taxi_supp['id']);
-              newli.textContent = taxi_supp['name'];
-              newli.setAttribute('role', 'option') ;
-              newli.setAttribute('tabindex', "-1") ;
-              taxi_suplier.append(newli);
-            })
+            refreshTSupplierList();
           }
 
           tsToggleList('Open')
@@ -615,6 +640,20 @@ $(document).ready(function(){
           }
           break 
       }
+    }
+
+    function refreshTSupplierList() {
+      const parent_taxi = document.getElementById("taxi-supplier-list");
+      parent_taxi.innerHTML = ""; // Clear list before adding new elements
+      taxi_supplier_list.forEach(supplier => {
+          const newTLi = document.createElement("li");
+          newTLi.className = "taxi-supplier-item";
+          newTLi.dataset.id = supplier.id;
+          newTLi.textContent = supplier.name;
+          newTLi.setAttribute('role', 'option');
+          newTLi.setAttribute('tabindex', "-1");
+          parent_taxi.append(newTLi);
+      });
     }
 
 })
@@ -698,7 +737,6 @@ $(document).ready(function(){
     /////////////////////////////////
   
     function bsToggleList(whichWay) {
-      console.log("whichway taxi: ", whichWay);
       if (whichWay === 'Open') {
         bsList.classList.remove('hidden-all')
         busSupplier.setAttribute('aria-expanded', 'true')
@@ -829,15 +867,7 @@ $(document).ready(function(){
 
             }
 
-            bus_supplier_list.map((bus_supp)=>{
-              var newli = document.createElement("li");
-              newli.className="bus-supplier-item";
-              newli.setAttribute('data-id',bus_supp['id']);
-              newli.textContent = bus_supp['name'];
-              newli.setAttribute('role', 'option') ;
-              newli.setAttribute('tabindex', "-1") ;
-              bus_suplier.append(newli);
-            })
+            refreshBSupplierList();
           }
 
           bsToggleList('Open')
@@ -873,6 +903,20 @@ $(document).ready(function(){
           break 
       }
     }
+
+    function refreshBSupplierList() {
+      const parent_bus = document.getElementById("bus-supplier-list");
+      parent_bus.innerHTML = ""; // Clear list before adding new elements
+      bus_supplier_list.forEach(supplier => {
+          const newBLi = document.createElement("li");
+          newBLi.className = "bus-supplier-item";
+          newBLi.dataset.id = supplier.id;
+          newBLi.textContent = supplier.name;
+          newBLi.setAttribute('role', 'option');
+          newBLi.setAttribute('tabindex', "-1");
+          parent_bus.append(newBLi);
+      });
+  }
 
 })
 
@@ -957,7 +1001,7 @@ $('#ConfirmAddBus').on('click', function(){
   var bus_trajet = document.getElementById('bus_trajet').value;
   var bus_class = document.getElementById('bus-supplier-input').value;
   var busDate = document.getElementById('busDate').value;
-  var busDepartureTime = document.getElementById('busDepartureTime').value;
+  var busArrivalTime = document.getElementById('busArrivalTime').value;
   var busDepartureTime = document.getElementById('busDepartureTime').value;
 
   var pnr_id = document.getElementById('pnr_id').getAttribute('data-id');
@@ -969,7 +1013,7 @@ $('#ConfirmAddBus').on('click', function(){
 
   $('#ht_details').append(`<p>Trajet/Classe :${bus_trajet}/ ${bus_class} <br/>`);
   $('#ht_details').append(`Départ : ${busFormattedDate} ${busDepartureTime} </br>`);
-  $('#ht_details').append(`Arrivé : ${busFormattedDate} ${busDepartureTime} </p>`);
+  $('#ht_details').append(`Arrivé : ${busFormattedDate} ${busArrivalTime} </p>`);
 
 
  // Enregistrer le fournisseur s'il est nouveau 
@@ -980,7 +1024,7 @@ $('#ConfirmAddBus').on('click', function(){
   }
   // Enregistrer toutes les informations dans sessionStorage
 
-  bus_details = {'trajet':bus_trajet,'classe':bus_class,'date':busDate,'departureTime':busDepartureTime,'arrivalTime':busDepartureTime};
+  bus_details = {'trajet':bus_trajet,'classe':bus_class,'date':busDate,'departureTime':busDepartureTime,'arrivalTime':busArrivalTime};
   sessionStorage.setItem('bus_details',JSON.stringify(bus_details));
 
   toastr.success('Informations ajoutées.')
