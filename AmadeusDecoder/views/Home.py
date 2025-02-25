@@ -34,6 +34,7 @@ from AmadeusDecoder.models.invoice.Fee import Product
 from AmadeusDecoder.models.pnrelements.PnrAirSegments import PnrAirSegments
 from AmadeusDecoder.models.history.History import History
 from AmadeusDecoder.models.configuration.Configuration import Configuration
+from AmadeusDecoder.models.pnrelements.SpecialServiceRequest import ServiceSupplier
 
 from AmadeusDecoder.utilities.FtpConnection import upload_file
 from AmadeusDecoder.utilities.SendMail import Sending
@@ -915,8 +916,8 @@ def get_order(request, pnr_id):
     config = Configuration.objects.filter(name='Saving File Tools', value_name='File protocol', environment=settings.ENVIRONMENT)
 
     
-    file_dir = '/opt/odoo/issoufali-addons/import_saleorder/data/source'
-    customer_dir = '/opt/odoo/issoufali-addons/contacts_from_incadea/data/source'
+    file_dir = '/opt/issoufali/odoo/issoufali-addons/import_saleorder/data/source'
+    customer_dir = '/opt/issoufali/odoo/issoufali-addons/contacts_from_incadea/data/source'
     
     fieldnames_order = [
         'LineID',
@@ -1155,11 +1156,48 @@ def get_order(request, pnr_id):
                     type_other_fee = ''
                     if order.other_fee is not None and order.other_fee.other_fee_status == 1:
                         other_fee = OthersFee.objects.filter(pk=order.other_fee.id)
+                        _ht_details = None
                         for item in other_fee:
                             if item.fee_type == 'EMD' or item.fee_type == 'TKT' or item.fee_type == 'Cancellation' or item.fee_type == 'AVOIR COMPAGNIE':
                                 type_other_fee = item.fee_type
                             else:
                                 type_other_fee = 'EMD'
+
+                            print('------------------- HOTEL TAXI DETAILS -------------------------')
+
+                            print('ITEM DESIGNATION : ',item.designation)
+                            if item.designation in ['HOTEL','TAXI','TRANSFERT','BUS','SNCF TGV AIR','TRAIN : SNCF']:
+                                if item.designation == 'HOTEL':
+                                    _ht_details= { 
+                                        'Type': 'HOTEL',
+                                        'Name': item.value.get('name'),
+                                        'ArrivalDate': item.value.get('arrivalDate'),
+                                        'DepartureDate': item.value.get('departureDate'),
+                                        'Client' : item.value.get('client')
+                                    }
+
+                                if item.designation in ['TAXI','TRANSFERT']:
+                                    _ht_details= { 
+                                        'Type': 'TAXI' if item.designation == 'TAXI' else 'TRANSFERT' ,
+                                        'Trajet': item.value.get('trajet'),
+                                        'Date': item.value.get('date'),
+                                        'ArrivalTime': item.value.get('arrivalTime'),
+                                        'DepartureTime': item.value.get('departureTime')
+                                        
+                                    }
+
+                                if item.designation in ['BUS','SNCF TGV AIR','TRAIN : SNCF']:
+                                    _ht_details= { 
+                                        'Type': 'TRAIN : SNCF' if item.designation == 'TRAIN : SNCF' else 'SNCF TGV AIR' if item.designation == 'SNCF TGV AIR' else 'BUS',
+                                        'Trajet': item.value.get('trajet'),
+                                        'Date': item.value.get('date'),
+                                        'ArrivalTime': item.value.get('arrivalTime'),
+                                        'DepartureTime': item.value.get('departureTime'),
+                                        'Classe': item.value.get('classe'),
+                                        
+                                    }
+                                print(_ht_details)
+
                             csv_order_lines.append({
                                 'LineID': order.id,
                                 'Type': type_other_fee,
@@ -1173,7 +1211,8 @@ def get_order(request, pnr_id):
                                 'Civility': '',
                                 'PassengerFirstname': '',
                                 'PassengerLastname': '',
-                                'Segments': '',                      
+                                'Segments': '', 
+                                'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',                     
                                 'DocCurrency': 'EUR',
                                 'Transport': item.cost,
                                 'Tax': item.tax,
@@ -1595,7 +1634,10 @@ def import_product(request, pnr_id):
         if 'listNewProduct' in request.POST:
             product = json.loads(request.POST.get('listNewProduct'))
             pnr = Pnr.objects.get(pk=int(pnr_id))
+            print("****************** PRODUCT *********************")
+            print(product)
             
+            # cas pour l'AVOIR COMPAGNIE
             if product[0] == '19':
                 if float(product[3]) > 0:
                     product[3] = -abs(product[3])
@@ -1610,6 +1652,18 @@ def import_product(request, pnr_id):
                     passenger = Passenger.objects.get(pk=product[8])
                     passenger_segment = OtherFeeSegment(segment=segment,other_fee= other_fees, passenger=passenger)
                     passenger_segment.save()
+
+            # cas pour l'HOTEL et TAXI
+            if product[0] in ['9','10','12','15','14','8']:
+
+                other_fee = OthersFee(designation=product[2], cost=product[3], tax=product[4], total=product[5],
+                                        pnr=pnr, fee_type=product[1], reference=product[7], emitter=emitter,
+                                        quantity=1, is_subjected_to_fee=False,creation_date=datetime.now())
+                other_fee.save()
+                value = json.loads(product[8])
+                other_fee.value = value
+                other_fee.passenger_segment = value.get("client")
+                other_fee.save()
             
             else:
                 other_fees = OthersFee.objects.filter(pnr=pnr_id, product_id=product[0])
@@ -1617,6 +1671,8 @@ def import_product(request, pnr_id):
                                         pnr=pnr, fee_type=product[1], passenger_segment=product[6], reference=product[7], emitter=emitter,
                                         quantity=1, is_subjected_to_fee=False, creation_date=datetime.now())
                 other_fees.save()
+
+
             
             # save creator user to user copying
             try:
@@ -2033,6 +2089,82 @@ def get_ticket_created_today_not_invoiced(request):
     print('------------- NOTIF NUMBER----------------- : ',nbre_pnr)
 
     return tickets
+
+# --------------- HOTEL & TAXI -- ---------------------------
+@login_required(login_url="index")
+def get_service_supplier_list(request):
+    
+    if request.method == 'GET':
+        hotel_suppliers = ServiceSupplier.objects.filter(service__id=10).all()
+        hSupplier = []
+        for supplier in hotel_suppliers:
+            hSupplier.append({"id":supplier.id,"name":supplier.name})
+
+        taxi_suppliers = ServiceSupplier.objects.filter(service__id=12).all()
+        tSupplier = []
+        for supplier in taxi_suppliers:
+            tSupplier.append({"id":supplier.id,"name":supplier.name})
+
+        bus_classes = ServiceSupplier.objects.filter(service__id=9).all()
+        busClass = []
+        for supplier in bus_classes:
+            busClass.append({"id":supplier.id,"name":supplier.name})
+
+        context = {"hotel_suppliers":hSupplier,"taxi_suppliers":tSupplier,"bus_classes":busClass}
+        return JsonResponse(context)
+    
+@login_required(login_url='index')
+def add_service_supplier(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        service_id = request.POST.get('service')
+
+        service_supplier = ServiceSupplier(name=name,service_id= service_id)
+        service_supplier.save()
+
+        return JsonResponse({'success':True, 'message': 'Service supplier added successfully'})
+
+@login_required(login_url="index")
+def save_hotel(request):
+    if request.method == 'POST':
+        hotel_name = request.POST.get('name')
+        arrivalDate = request.POST.get('arrivalDate')
+        arrivalTime = request.POST.get('arrivalTime')
+        departureDate = request.POST.get('departureDate')
+        departureTime = request.POST.get('departureTime')
+        room = request.POST.get('room')
+        adults = request.POST.get('adults')
+        kids = request.POST.get('kids')
+        pnr_id = request.POST.get('pnr_id')
+
+        hotel_detail = {'name':hotel_name,'arrivalDate':arrivalDate,'arrivalTime':arrivalTime,'departureDate':departureDate,'departureTime':departureTime,'room':room,'adults':adults,'kids':kids}
+
+        other_fee = OthersFee(designation="HOTEL",value=hotel_detail,pnr_id=pnr_id,fee_type="Supplement",creation_date=datetime.now())
+        other_fee.save()
+
+        context = {"hotel_detail":hotel_detail}
+
+        return JsonResponse(context)
+
+@login_required(login_url="index")
+def save_taxi(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        date = request.POST.get('date')
+        heure = request.POST.get('heure')
+        passagers = request.POST.get('passagers')
+        location = request.POST.get('location')
+
+        pnr_id = request.POST.get('pnr_id')
+
+        taxi_detail = {'name':name,'date':date,'heure':heure,'passagers':passagers,'depart':location}
+
+        other_fee = OthersFee(designation="TAXI",value=taxi_detail,pnr_id=pnr_id,fee_type="Supplement",creation_date=datetime.now())
+        other_fee.save()
+
+        context = {"taxi_detail":taxi_detail}
+
+        return JsonResponse(context)
 
 # Motif pour décommander un PNR
 @login_required(login_url='index')

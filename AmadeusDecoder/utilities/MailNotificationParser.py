@@ -65,12 +65,12 @@ class MailNotification():
                 if pnr.agent is not None:
                     recipients = [pnr.agent.email, "maphie@alita.re"]
 
-                Sending.send_email(
-                        "issoufali.pnr@outlook.com",
-                        recipients,
-                        subject,
-                        message
-                    )
+                # Sending.send_email(
+                #         "issoufali.pnr@outlook.com",
+                #         recipients,
+                #         subject,
+                #         message
+                #     )
 
     def pnr_missing_notification(time_now):
         pnr_missing = Pnr.objects.filter(system_creation_date = (time_now - timedelta(minutes=1)), state = 1)
@@ -186,7 +186,7 @@ class MailNotification():
                 weekend_processing_time(180)
         except Exception as e:
             try:
-                Sending.send_email_pnr_parsing("Aucun PNR non remonté")
+                # Sending.send_email_pnr_parsing("Aucun PNR non remonté")
             except Exception as e:
                 print(f"Error sending pnr not sent to GP : {e}")
                 raise e
@@ -546,7 +546,7 @@ class MailNotification():
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,  
                     # subject, 
                     # message
-                )
+                # )
             
             if len(no_anomaly_pnrs_before_afternoon_for_administrator) > 0:
                 subject = f'PNR non envoyé dans Odoo pour les directions entre 08h et 12h, ce {dt_now.strftime("%d-%m-%Y")}'                   
@@ -582,9 +582,9 @@ class MailNotification():
                     "maphie@alita.re",
                     "nomena@alita.re",
                     # administrator_users_mail + mgbi_users_mail,  
-                    subject, 
-                    message
-                )
+                #     subject, 
+                #     message
+                # )
                                 
             if len(no_anomaly_pnrs_before_afternoon_for_administrator) < 1 and len(no_anomaly_pnrs_before_afternoon_after_processing) < 1:
                 print("Aucun PNR non envoyé dans cette intervalle [08:00 - 12:00]")
@@ -633,7 +633,7 @@ class MailNotification():
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,
                     # subject, 
                     # message
-                )
+                # )
                 
             if len(no_anomaly_pnrs_after_afternoon_for_administrator) > 0:
                 subject = f'PNR non envoyé dans Odoo pour les directions entre 08h et 15h, ce {dt_now.strftime("%d-%m-%Y")}'                
@@ -670,9 +670,9 @@ class MailNotification():
                     "maphie@alita.re",
                     "nomena@alita.re",
                     # administrator_users_mail + mgbi_users_mail,  
-                    subject, 
-                    message
-                )
+                #     subject, 
+                #     message
+                # )
 
             if len(no_anomaly_pnrs_after_afternoon_for_administrator) < 1 and len(no_anomaly_pnrs_after_afternoon_after_processing) < 1:
                 print("Aucun PNR non envoyé dans cette intervalle [08:00 - 15:00]")
@@ -823,10 +823,10 @@ class MailNotification():
                 """
 
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
-                Sending.send_email(
-                    ANOMALY_EMAIL_SENDER["address"], 
-                    administrator_users_mail + mgbi_users_mail,
-                    subject, 
-                    message
-                )
+                # Sending.send_email(
+                #     ANOMALY_EMAIL_SENDER["address"], 
+                #     administrator_users_mail + mgbi_users_mail,
+                #     subject, 
+                #     message
+                # )
                 print("EMAIL ENVOYE")

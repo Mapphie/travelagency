@@ -682,6 +682,61 @@ document
           document.getElementById('ticket-avoir').style.borderColor = 'red';
         }
       }
+      console.log('ProductDropdown.value : ',ProductDropdown.value);
+      
+      // Récupération des informations supplémentaires concernant le bus s'il y en a, dans sessionStorage
+      if( [8,9,14].includes(Number(ProductDropdown.value)) && sessionStorage.getItem('bus_details')){
+        bus_details = sessionStorage.getItem('bus_details');
+        listNewProduct.push(
+          ProductDropdown.value,
+          ProductTypeInitiale.textContent,
+          designation,
+          parseFloat(ProductTranspInput.value).toFixed(2),
+          parseFloat(ProductTaxInput.value).toFixed(2),
+          (
+            parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
+          ).toFixed(2),
+          ProductpassInput.value,
+          "",
+          bus_details
+        );
+      } 
+      
+      // Récupération des informations supplémentaires concernant l'hôtel s'il y en a, dans sessionStorage
+      if(ProductDropdown.value == 10 && sessionStorage.getItem('hotel_info')){
+          hotel_info = sessionStorage.getItem('hotel_info');
+          listNewProduct.push(
+            ProductDropdown.value,
+            ProductTypeInitiale.textContent,
+            designation,
+            parseFloat(ProductTranspInput.value).toFixed(2),
+            parseFloat(ProductTaxInput.value).toFixed(2),
+            (
+              parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
+            ).toFixed(2),
+            ProductpassInput.value,
+            "",
+            hotel_info
+          );
+      }
+
+      // Récupération des informations supplémentaires concernat le taxi s'il y en a, dans sessionStorage
+      if([12,15].includes(Number(ProductDropdown.value)) && sessionStorage.getItem('taxi_details')){
+        taxi_details = sessionStorage.getItem('taxi_details');
+        listNewProduct.push(
+          ProductDropdown.value,
+          ProductTypeInitiale.textContent,
+          designation,
+          parseFloat(ProductTranspInput.value).toFixed(2),
+          parseFloat(ProductTaxInput.value).toFixed(2),
+          (
+            parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
+          ).toFixed(2),
+          ProductpassInput.value,
+          "",
+          taxi_details
+        );
+      } 
       else {
         listNewProduct.push(
           ProductDropdown.value,
@@ -709,6 +764,10 @@ document
         success: (response) => {
           console.log(response);
           location.reload();
+          // supprimer les informations supplémentauires des taxi et hotels dans sessionStorage
+          if(sessionStorage.getItem('taxi_details')){sessionStorage.removeItem('taxi_details');}
+          if(sessionStorage.getItem('hotel_info')){sessionStorage.removeItem('hotel_info');}
+          if(sessionStorage.getItem('bus_details')){sessionStorage.removeItem('bus_details');}
         },
         error: (response) => {
           console.log(response);
@@ -1242,12 +1301,12 @@ if (count__ticketHaveNoPassenger.length > 0) {
 $('#ticket-avoir').hide();
 $('#select_Passenger').hide();
 $('#multipleSelect').hide();
-
-
-
+$('#ht_details').hide();
 
 
 $('#SelectProduct').on('change', function(){
+  console.log("SELECT PRODUCT CLICKED");
+  
   select_product = $('#SelectProduct').val();
 
   if(select_product == 19){
@@ -1351,6 +1410,13 @@ $('#SelectProduct').on('change', function(){
     });
 
   }
+
+  if(select_product == 10){
+    console.log("HOTEL MODAL IS OPEN");
+    
+    $('#modalHotelInfo').modal("show");
+  }
+
 });
 
 const validateInputTickerAvoir = (isValid) => {
