@@ -916,8 +916,8 @@ def get_order(request, pnr_id):
     config = Configuration.objects.filter(name='Saving File Tools', value_name='File protocol', environment=settings.ENVIRONMENT)
 
     
-    file_dir = '/opt/issoufali/odoo/issoufali-addons/import_saleorder/data/source'
-    customer_dir = '/opt/issoufali/odoo/issoufali-addons/contacts_from_incadea/data/source'
+    file_dir = '/opt/odoo/issoufali-addons/import_saleorder/data/source'
+    customer_dir = '/opt/odoo/issoufali-addons/contacts_from_incadea/data/source'
     
     fieldnames_order = [
         'LineID',
@@ -1116,6 +1116,7 @@ def get_order(request, pnr_id):
 
                     if order.fee is not None:
                         fee = Fee.objects.filter(pk=order.fee.id)
+                        _ht_details = None
                         for item in fee:
                             if order.fee.ticket is not None and order.fee.ticket.ticket_status == 1 and order.fee.ticket.id == item.ticket.id:
                                 csv_order_lines.append({
@@ -1131,7 +1132,8 @@ def get_order(request, pnr_id):
                                     'Civility': '',
                                     'PassengerFirstname': '',
                                     'PassengerLastname': '',
-                                    'Segments': '',                      
+                                    'Segments': '',
+                                    'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',                      
                                     'DocCurrency': 'EUR',
                                     'Transport': item.cost,
                                     'Tax': item.tax,
@@ -1235,6 +1237,7 @@ def get_order(request, pnr_id):
                                 order.other_fee.save()
 
                     if order.fee is not None:
+                        _ht_details = None
                         fee = Fee.objects.filter(pk=order.fee.id)
                         for item in fee:
                             if order.fee.other_fee is not None and order.fee.other_fee.other_fee_status == 1 and order.fee.other_fee.id == item.other_fee.id:
@@ -1251,7 +1254,8 @@ def get_order(request, pnr_id):
                                     'Civility': '',
                                     'PassengerFirstname': '',
                                     'PassengerLastname': '',
-                                    'Segments': '',                      
+                                    'Segments': '',
+                                    'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',                       
                                     'DocCurrency': 'EUR',
                                     'Transport': item.cost,
                                     'Tax': item.tax,
@@ -1333,8 +1337,8 @@ def get_quotation(request, pnr_id):
     parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #get the parent folder of the current file
     config = Configuration.objects.filter(name='File saving configuration', value_name='Saving protocol', environment=settings.ENVIRONMENT)
 
-    file_dir = '/opt/odoo/issoufali-addons/import_saleorder/data/source'
-    customer_dir = '/opt/odoo/issoufali-addons/contacts_from_incadea/data/source'
+    file_dir = '/opt/issoufali-addons/import_saleorder/data/source'
+    customer_dir = '/opt/issoufali-addons/contacts_from_incadea/data/source'
     
     customer_row = {}
     fieldnames_order = [
