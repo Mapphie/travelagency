@@ -933,6 +933,7 @@ def get_order(request, pnr_id):
         'PassengerFirstname',
         'PassengerLastname',
         'Segments',
+        'HT_details',
         'DocCurrency',
         'Transport',
         'Tax',
@@ -1035,6 +1036,7 @@ def get_order(request, pnr_id):
             orders = PassengerInvoice.objects.filter(pnr=pnr_id, client=customer_id, is_invoiced=False)
             order_invoice_number = datetime.now().strftime('%Y%m%d%H%M') + str(random.randint(1,9)) # SET ORDER NUMBER
             for order in orders:
+                _ht_details = None
                 segments_parts = []
                 if order.status == 'sale' and order.is_invoiced == False:
                     segments_parts = []
@@ -1093,6 +1095,7 @@ def get_order(request, pnr_id):
                             'PassengerFirstname': ticket.passenger.name, # type: ignore
                             'PassengerLastname': ticket.passenger.surname, # type: ignore
                             'Segments': json.dumps(air_segments),
+                            'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',
                             'DocCurrency': 'EUR',
                             'Transport': ticket.transport_cost,
                             'Tax': ticket.tax,
@@ -1185,7 +1188,8 @@ def get_order(request, pnr_id):
                                         'Date': item.value.get('date'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
                                         'DepartureTime': item.value.get('departureTime')
-                                        
+                                        'taximan': item.value.get('taximan'),
+                                        'passengers' : item.value.get('taxiPassenger')
                                     }
 
                                 if item.designation in ['BUS','SNCF TGV AIR','TRAIN : SNCF']:
@@ -1196,7 +1200,7 @@ def get_order(request, pnr_id):
                                         'ArrivalTime': item.value.get('arrivalTime'),
                                         'DepartureTime': item.value.get('departureTime'),
                                         'Classe': item.value.get('classe'),
-                                        
+                                        'passengers': item.value.get('passenger')
                                     }
                                 print(_ht_details)
 
@@ -1355,6 +1359,7 @@ def get_quotation(request, pnr_id):
         'PassengerFirstname',
         'PassengerLastname',
         'Segments',
+        'HT_details',
         'DocCurrency',
         'Transport',
         'Tax',
@@ -1430,6 +1435,7 @@ def get_quotation(request, pnr_id):
                     air_segments = []
                     segment_names = []
                     segment_dates = []
+                    _ht_details = None
                     if segments_parts is not None:
                         for part in segments_parts:
                             if part.segment and part.segment.segment_type is not None and part.segment.segment_type == 'Flight':
@@ -1458,6 +1464,7 @@ def get_quotation(request, pnr_id):
                         'PassengerFirstname': ', '.join(tst_passenger_firstname),
                         'PassengerLastname': ', '.join(tst_passenger_name),
                         'Segments': json.dumps(air_segments),
+                        'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',
                         'DocCurrency': 'EUR',
                         'Transport': ticket.transport_cost,
                         'Tax': ticket.tax,
@@ -1475,6 +1482,7 @@ def get_quotation(request, pnr_id):
                         order.save()
 
                 if order.fee is not None:
+                    _ht_details = None
                     fee = Fee.objects.filter(pk=order.fee.id)
                     for item in fee:
                         if order.fee.ticket is not None and order.fee.ticket.id == item.ticket.id:
@@ -1491,7 +1499,8 @@ def get_quotation(request, pnr_id):
                                 'Civility': '',
                                 'PassengerFirstname': '',
                                 'PassengerLastname': '',
-                                'Segments': '',                     
+                                'Segments': '',
+                                'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',                     
                                 'DocCurrency': 'EUR',
                                 'Transport': item.cost,
                                 'Tax': item.tax,
@@ -1509,6 +1518,7 @@ def get_quotation(request, pnr_id):
                                 order.save()
                             
                 if order.other_fee is not None:
+                    _ht_details = None
                     other_fee = OthersFee.objects.filter(pk=order.other_fee.id)
                     for item in other_fee:
                         if item.fee_type == 'EMD' and item.fee_type == 'TKT' and item.fee_type == 'Cancellation' and item.fee_type == 'AVOIR COMPAGNIE':
@@ -1528,7 +1538,8 @@ def get_quotation(request, pnr_id):
                             'Civility': '',
                             'PassengerFirstname': '',
                             'PassengerLastname': '',
-                            'Segments': '',                      
+                            'Segments': '',
+                            'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',                      
                             'DocCurrency': 'EUR',
                             'Transport': item.cost,
                             'Tax': item.tax,
@@ -1546,6 +1557,7 @@ def get_quotation(request, pnr_id):
                             order.save()
 
                 if order.invoice_id is not None:
+                    _ht_details = None
                     segments_parts = PnrAirSegments.objects.filter(pnr=pnr_id)
                     air_segments = []
                     segment_names = []
@@ -1575,6 +1587,7 @@ def get_quotation(request, pnr_id):
                         'PassengerFirstname': '',
                         'PassengerLastname': '',
                         'Segments': json.dumps(air_segments),
+                        'HT_details':json.dumps(_ht_details) if _ht_details is not None else '',
                         'DocCurrency': 'EUR',
                         'Transport': order.invoice_id.detail.total if order.invoice_id is not None else '0',
                         'Tax': '0',
@@ -1666,7 +1679,6 @@ def import_product(request, pnr_id):
                 other_fee.save()
                 value = json.loads(product[8])
                 other_fee.value = value
-                other_fee.passenger_segment = value.get("client")
                 other_fee.save()
             
             else:
