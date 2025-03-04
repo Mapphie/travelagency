@@ -1187,7 +1187,7 @@ def get_order(request, pnr_id):
                                         'Trajet': item.value.get('trajet'),
                                         'Date': item.value.get('date'),
                                         'ArrivalTime': item.value.get('arrivalTime'),
-                                        'DepartureTime': item.value.get('departureTime')
+                                        'DepartureTime': item.value.get('departureTime'),
                                         'taximan': item.value.get('taximan'),
                                         'passengers' : item.value.get('taxiPassenger')
                                     }
