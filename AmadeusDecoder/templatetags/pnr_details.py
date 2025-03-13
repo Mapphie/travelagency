@@ -17,6 +17,7 @@ from AmadeusDecoder.models.user.Users import User
 from AmadeusDecoder.models.user.Users import Office
 from AmadeusDecoder.models.invoice.InvoicePassenger import PassengerInvoice
 from AmadeusDecoder.models.invoice.Ticket import Ticket
+import ast
 
 register = template.Library()
 
