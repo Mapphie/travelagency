@@ -9,7 +9,7 @@ $('#fee').hide();
 $('#comment-ticket-cancel-button').hide();
 
 $('#comment-ticket').on('click', ()=> {
-    // lister les billet non affichés dans la page pnr-detail
+    // lister les billets non affichés dans la page pnr-detail
     var container = document.getElementById("list-ticket");
     var pnrIdDiv = document.getElementById("pnr_id");
     var pnr_id = pnrIdDiv.getAttribute("data-id");
@@ -19,7 +19,7 @@ $('#comment-ticket').on('click', ()=> {
     $('#comment-ticket').hide();  
 })
 
-function createButton(container, ticketNumber) {
+function createButton(container, ticketNumber, transportCost, taxe) {
     // Créer un bouton correspondant à un billet
     var button = document.createElement("button");
     button.className = 'btn btn-info';
@@ -37,6 +37,12 @@ function createButton(container, ticketNumber) {
         $('#taxSection').show();
 
         $('#ticket_number').val(ticketNumber);
+        $('#ticket_number').prop('disabled', true);
+
+        $('#montant_hors_taxe').val(transportCost);
+        $('#taxe').val(taxe);
+
+
         // Afficher le bouton annuler
         $('#comment-ticket-cancel-button').show();
         
@@ -97,7 +103,7 @@ function get_unshowed_ticket(pnr_id,container){
 
                 // créer les boutons correspondants au billets
                 data.tickets.forEach((ticket)=>{
-                    createButton(container,ticket.number)
+                    createButton(container,ticket.number,ticket.transport_cost,ticket.taxe)
                 })
 
                 // Ajouter un bouton pour un nouveau billet
@@ -318,8 +324,9 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     let result = data.verif;
-
-                    if (result.exist === true) { // if ticket exists
+                    console.log('RESULT : ', result);
+                    
+                    if (result.exist === 'Exist') { // if ticket exists
                         // Don't allow to modify ticket number
                         $('#ticket_number').attr('disabled', true)
                         showInfoSection();
@@ -331,11 +338,20 @@ $(document).ready(function () {
                         toastr.info('Ticket Is no adc')
                     } 
                     if(result === 'pnr'){
-                        toastr.info("Billet d'un autre PNR")
+                        toastr.info("Billet d'un autre PNR !")
+                    }
+                    if(result === 'True'){
+                        toastr.info("Ce billet est déjà remonté !")
+                    }
+
+                    if(result === 'Tarification'){
+                        toastr.info("Envoi de mail de tarification billet manquant !")
                     }
                     
-                    if (result.exist === false) {
-                        toastr.info(`Ce billet est déja présent dans le PNR ${result.pnr}`)
+                    if (result.exist === true) {
+                        toastr.info(`Ce billet est déja présent dans le PNR ${result.pnr} !`);
+                        $('#info').hide();
+                        $('#taxSection').hide();
                     }
                     if (result === 'False') { // if ticket does not exist
                         $.ajax({

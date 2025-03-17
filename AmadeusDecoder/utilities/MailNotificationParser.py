@@ -63,7 +63,7 @@ class MailNotification():
                         """.format(pnr=pnr.number, segment=tickets_passenger_segment, date=pnr.system_creation_date.strftime("%d-%m-%Y %H-%M-%S"))
 
                 if pnr.agent is not None:
-                    recipients = [pnr.agent.email, "maphiesarobidy@outlook.fr"]
+                    recipients = [pnr.agent.email, "maphie@alita.re"]
 
                 # Sending.send_email(
                 #         "issoufali.pnr@outlook.com",
@@ -185,7 +185,7 @@ class MailNotification():
                 weekend_processing_time(180)
         except Exception as e:
             try:
-                Sending.send_email_pnr_parsing("Aucun PNR non remonté")
+                # Sending.send_email_pnr_parsing("Aucun PNR non remonté")
             except Exception as e:
                 print(f"Error sending pnr not sent to GP : {e}")
                 raise e
@@ -462,8 +462,9 @@ class MailNotification():
         mgbi_users_mail = [
             "phpr974@gmail.com",
             "pp@phidia.onmicrosoft.com",
-            "tahina@phidia.onmicrosoft.com",
-            "maphiesarobidy@outlook.fr",
+            "tahina@alita.re",
+            "maphie@alita.re",
+            "nomena@alita.re",
         ]
         
         other_users_mail = [
@@ -743,8 +744,9 @@ class MailNotification():
         mgbi_users_mail = [
             "phpr974@gmail.com",
             "pp@phidia.onmicrosoft.com",
-            "tahina@phidia.onmicrosoft.com",
-            "maphieSarobidy@outlook.fr", 
+            "tahina@alita.re",
+            "maphie@alita.re",
+            "nomena@alita.re",
         ]
         
         other_users_mail = [

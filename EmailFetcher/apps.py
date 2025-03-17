@@ -218,9 +218,9 @@ class EmailfetcherConfig(AppConfig):
             return
         os.environ['CMDLINERUNNER_RUN_ONCE_EMAIL'] = 'True'
         
-        # load_configs = Thread(target=load_config)
-        # load_configs.start()
-        #
+        load_configs = Thread(target=load_config)
+        load_configs.start()
+        
         
         # email_thread_once = Thread(target=fetch_email)
         # email_thread_once.start()

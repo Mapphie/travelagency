@@ -44,6 +44,8 @@
  <link rel="stylesheet" href="{% static 'css/pnr_motif.css' %}">
 
  <link rel="stylesheet" href="{% static 'css/select-custom.css' %}">
+ <link rel="stylesheet" href="{% static 'css/hotel_taxi.css' %}">
+
  <!-- tablesort-->
  <link href="{% static 'css/theme.default.css' %}" rel="stylesheet">
  <!-- <link href="{% static 'css/select2.min.css' %}" rel="stylesheet"> -->
@@ -80,7 +82,7 @@ old -->
 			    {% include "commandes_modal.html" %}
         </li>
         <li class="nav-item d-flex flex-column">
-          <span id="mail-user" data-mail="maphieSarobidy@outlook.fr;{{request.user.email}}">maphieSarobidy@outlook.fr;{{request.user.email}}</span>
+          <span id="mail-user" data-mail="issoufali.pnr@gmail.com;{{request.user.email}}">issoufali.pnr@gmail.com;{{request.user.email}}</span>
           <a type="button" class="btn btn-outline-primary" onclick="copymailuser()">Zenith</a> 
         </li>
 
@@ -739,6 +741,8 @@ old -->
   <script src="{% static 'js/CustomerHandler.js' %}"></script>
   <script src="{% static 'js/pnrDetailHandler.js' %}"></script>
   <script src="{% static 'js/invoice_unorder.js' %}"></script>
+  <script src="{% static 'js/hotel_taxi.js' %}"></script>
+  <script src="{% static 'js/bus.js' %}"></script>
 
 
   <script>

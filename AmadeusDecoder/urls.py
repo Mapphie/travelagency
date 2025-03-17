@@ -76,6 +76,10 @@ urlpatterns = [
     path('home/ticket-delete',ticket_delete,name='ticket_delete'),
     path('comment/get-unshowed-tickets',get_unshowed_tickets, name='get_unshowed_tickets'),
     path('check-uninvoiced-status/', uncheck_ticket_in_passenger_invoiced, name='uncheck_ticket_in_passenger_invoiced'),
+    path('home/get-service-supplier-list',get_service_supplier_list,name='get_service_supplier_list'),
+    path('home/save-hotel',save_hotel,name='save_hotel'),
+    path('home/save-taxi',save_taxi,name='save_taxi'),
+    path('home/add-service-supplier',add_service_supplier, name='add_service_supplier'),
     path('home/unorder-pnr/add-motif', addMotif,name="add_motif"),
     path('home/pnr/cancel/<int:pnr_id>',cancel_pnr,name="cancel_pnr"),
 
