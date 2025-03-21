@@ -205,10 +205,7 @@ def alert_tjq() :
         "david.domitin@agences-issoufali.com",
         "karim@agences-issoufali.com",
         "fouadi@agences-issoufali.com",
-        "pp@phidia.onmicrosoft.com",
-        "tahina@alita.re",
-        "maphie@alita.re",
-        "nomena@alita.re",
+        "dev@alita.re",
     ]	
     							
 

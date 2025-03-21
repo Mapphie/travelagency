@@ -160,9 +160,7 @@ def control_data_gp_odoo() :
             """.format(message_head_pnr_not_found=message_head_pnr_not_found, message_for_not_found=message_for_not_found, message_head= message_head,message_body=message_body)
     											
     recipients = [
-        "tahina@alita.re",
-        "maphie@alita.re",
-        "nomena@alita.re",
+        "dev@alita.re",
     ]		
     subject = "Contrôle des données Gestion PNR - Odoo"						
 

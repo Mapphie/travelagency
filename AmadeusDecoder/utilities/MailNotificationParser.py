@@ -63,7 +63,7 @@ class MailNotification():
                         """.format(pnr=pnr.number, segment=tickets_passenger_segment, date=pnr.system_creation_date.strftime("%d-%m-%Y %H-%M-%S"))
 
                 if pnr.agent is not None:
-                    recipients = [pnr.agent.email, "maphie@alita.re"]
+                    recipients = [pnr.agent.email, "maphie@alita.re","nomena@alita.re"]
 
                 # Sending.send_email(
                 #         "issoufali.pnr@outlook.com",
@@ -99,7 +99,7 @@ class MailNotification():
                         """.format(pnr=pnr.number, date=pnr.system_creation_date.strftime("%d-%m-%Y %H-%M-%S"))
 
                 if pnr.agent_id is not None:
-                    recipient = [pnr.agent_id.email,  "tahina@alita.re", "maphie@alita.re"]
+                    recipient = [pnr.agent_id.email,  "dev@alita.re"]
                 Sending.send_email(
                         "issoufali.pnr@outlook.com",
                         recipient,
@@ -158,10 +158,7 @@ class MailNotification():
                         Sending.send_email(
                             "issoufali.pnr@outlook.com",
                             [
-                                "pp@phidia.onmicrosoft.com",
-                                "tahina@alita.re",
-                                "maphie@alita.re",
-                                "nomena@alita.re",
+                                "dev@alita.re"
                             ],
                             subject,
                             message
@@ -461,11 +458,7 @@ class MailNotification():
         ]
         
         mgbi_users_mail = [
-            "phpr974@gmail.com",
-            "pp@phidia.onmicrosoft.com",
-            "tahina@alita.re",
-            "maphie@alita.re",
-            "nomena@alita.re",
+            "dev@alita.re"
         ]
         
         other_users_mail = [
@@ -541,8 +534,7 @@ class MailNotification():
                 
                 # Envoyer le mail pour toutes les utilisateurs d"Isssoufali 
                 Sending.send_email(
-                    "maphie@alita.re",
-                    "nomena@alita.re",
+                    "dev@alita.re",
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,  
                     # subject, 
                     # message
@@ -579,8 +571,7 @@ class MailNotification():
                 
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
                 Sending.send_email(
-                    "maphie@alita.re",
-                    "nomena@alita.re",
+                    "dev@alita.re",
                     # administrator_users_mail + mgbi_users_mail,  
                 #     subject, 
                 #     message
@@ -628,8 +619,7 @@ class MailNotification():
                     
                 # Envoyer le mail pour toutes les utilisateurs d"Isssoufali 
                 Sending.send_email(
-                    "maphie@alita.re",
-                    "nomena@alita.re",
+                    "dev@alita.re",
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,
                     # subject, 
                     # message
@@ -667,8 +657,7 @@ class MailNotification():
                     
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
                 Sending.send_email(
-                    "maphie@alita.re",
-                    "nomena@alita.re",
+                    "dev@alita.re",
                     # administrator_users_mail + mgbi_users_mail,  
                 #     subject, 
                 #     message
@@ -747,11 +736,7 @@ class MailNotification():
         ]
         
         mgbi_users_mail = [
-            "phpr974@gmail.com",
-            "pp@phidia.onmicrosoft.com",
-            "tahina@alita.re",
-            "maphie@alita.re",
-            "nomena@alita.re",
+            "dev@alita.re",
         ]
         
         other_users_mail = [
