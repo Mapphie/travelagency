@@ -186,7 +186,7 @@ def delete_all_files_in_attachments_dir():
     print("*-- Deletes all files and directories recursively in the attachments directory --*")
     
     # Define the path to the attachments directory
-    attachments_dir = os.path.join("/", "opt", "travelagency", "EmailFetcher", "utilities", "attachments_dir")
+    attachments_dir = os.path.join("opt", "travelagency", "EmailFetcher", "utilities", "attachments_dir")
     
     # Iterate over all items (files and directories) in the attachments directory
     for item in os.scandir(attachments_dir):
@@ -222,34 +222,34 @@ class EmailfetcherConfig(AppConfig):
         load_configs.start()
         
         
-        email_thread_once = Thread(target=fetch_email)
-        email_thread_once.start()
+        # email_thread_once = Thread(target=fetch_email)
+        # email_thread_once.start()
 
         now = datetime.now()
         repeat_timer_for_pnr_upload_notification = 0
         
-        # Delete all files in attachments every 1 minutes 
-        task_schedule = RepeatTimer(1 * 60, delete_all_files_in_attachments_dir)
-        task_schedule.start()
+        # # Delete all files in attachments every 5 minutes 
+        # task_schedule = RepeatTimer(5 * 60, delete_all_files_in_attachments_dir)
+        # task_schedule.start()
         
-        def pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification):
-            print("📢 Mail notification for pnr not updated in pnr management...")
-            timer_update_check = RepeatTimer(repeat_timer_for_pnr_upload_notification, checking_pnr_not_uploaded_in_pnr_management)
-            timer_update_check.start()
+        # def pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification):
+        #     print("📢 Mail notification for pnr not updated in pnr management...")
+        #     timer_update_check = RepeatTimer(repeat_timer_for_pnr_upload_notification, checking_pnr_not_uploaded_in_pnr_management)
+        #     timer_update_check.start()
     
-        if now.weekday() in [0, 1, 2, 3, 4]: # [Lundi, Mardi, Mercredi, Jeudi, Vendredi]            
-            repeat_timer_for_pnr_upload_notification = 10 * 60
-            pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification)
-        if now.weekday() in [5]: # [Samedi]            
-            repeat_timer_for_pnr_upload_notification = 60 * 60
-            pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification)
-        if now.weekday() in [6]: # [Dimanche]
-            repeat_timer_for_pnr_upload_notification = 60 * 180
-            pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification)
+        # if now.weekday() in [0, 1, 2, 3, 4]: # [Lundi, Mardi, Mercredi, Jeudi, Vendredi]            
+        #     repeat_timer_for_pnr_upload_notification = 10 * 60
+        #     pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification)
+        # if now.weekday() in [5]: # [Samedi]            
+        #     repeat_timer_for_pnr_upload_notification = 60 * 60
+        #     pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification)
+        # if now.weekday() in [6]: # [Dimanche]
+        #     repeat_timer_for_pnr_upload_notification = 60 * 180
+        #     pnr_upload_repeat_timer(repeat_timer_for_pnr_upload_notification)
         
-        # print("==================== Mail notification for pnr not sent to Odoo ====================")
-        timer_update_check = RepeatTimer(1, checking_pnr_not_sent_to_odoo)
-        timer_update_check.start()
+        # # print("==================== Mail notification for pnr not sent to Odoo ====================")
+        # # timer_update_check = RepeatTimer(1, checking_pnr_not_sent_to_odoo)
+        # # timer_update_check.start()
         
         # print('Mail notification is starting....')
         # timer_pnr_misssing = RepeatTimer(1, checking_pnr_missing)
@@ -269,14 +269,19 @@ class EmailfetcherConfig(AppConfig):
         # timer_update_check = RepeatTimer(1, checking_pnr_with_fee_decrease_request)
         # timer_update_check.start()
         
-        # print('Product synchronisation is starting')
-        # timer_synchro = RepeatTimer(5, running_product_synhcro)
-        # timer_synchro.start()
+        # # print('Product synchronisation is starting')
+        # # timer_synchro = RepeatTimer(5, running_product_synhcro)
+        # # timer_synchro.start()
 
-        # from AmadeusDecoder.utilities.FtpConnection import download_file
-        # dest_dir = '/export/products'
+        # print('Daily Pnr created starting')
+        # timer_schedule = RepeatTimer(60, start_pnr_daily_report_schedule)
+        # timer_schedule.start()
+
+        # print('Pnr unissued OPC checking is running...')
+        # timer = RepeatTimer(60, pnr_unissued_opc_checking)  
+        # timer.start()
         
-        # send daily pnr fee update report
+        # # send daily pnr fee update report
         # daily_thread_once = RepeatTimer(3600, send_fee_update_list)
         # daily_thread_once.start()
         
