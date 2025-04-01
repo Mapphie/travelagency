@@ -134,10 +134,10 @@ class AmadeusdecoderConfig(AppConfig):
             return 
         os.environ['CMDLINERUNNER_RUN_ONCE'] = 'True'
         
-        # import AmadeusDecoder.utilities.configuration_data as configs
+        import AmadeusDecoder.utilities.configuration_data as configs
         
-        # load_configs = Thread(target=load_config, args=(configs, ))
-        # load_configs.start()
+        load_configs = Thread(target=load_config, args=(configs, ))
+        load_configs.start()
         
         # sleep(2)
         

@@ -1823,4 +1823,20 @@ def get_transport_details(other_fee_id):
             bus_passenger_str = other_fee.value.get("passenger", "[]")  # Récupère la valeur ou une liste vide par défaut
             bus_passsenger = ast.literal_eval(bus_passenger_str) if isinstance(bus_passenger_str, str) else bus_passenger_str
 
+        if product.id == 11:
+            print("LOCATION DE VEHICULE *****************************")
+            print(other_fee.value.get('fournisseur'))
+            return {
+                "fournisseur": other_fee.value.get('fournisseur'),
+                "conducteur": other_fee.value.get('conducteur'),
+                "modele": other_fee.value.get('modele'),
+                "lieu_prise": other_fee.value.get('lieu_prise'),
+                "date_prise": other_fee.value.get('date_prise'),
+                "heure_prise": other_fee.value.get('heure_prise'),
+                "lieu_return": other_fee.value.get('lieu_return'),
+                "date_return": other_fee.value.get('date_return'),
+                "heure_return": other_fee.value.get('heure_return')
+            }
+
+
         return {"trajet":trajet,"date":date, "arrivaltime": arrivaltime, "departuretime": departuretime,"passengers":passenger,"taximan":taximan,"bus_passengers":bus_passsenger}

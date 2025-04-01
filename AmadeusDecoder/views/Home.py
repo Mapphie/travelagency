@@ -1171,7 +1171,7 @@ def get_order(request, pnr_id):
                             print('------------------- HOTEL TAXI DETAILS -------------------------')
 
                             print('ITEM DESIGNATION : ',item.designation)
-                            if item.designation in ['HOTEL','TAXI','TRANSFERT','BUS','SNCF TGV AIR','TRAIN : SNCF']:
+                            if item.designation in ['HOTEL','TAXI','TRANSFERT','BUS','SNCF TGV AIR','TRAIN : SNCF','LOCATION VEH']:
                                 if item.designation == 'HOTEL':
                                     _ht_details= { 
                                         'Type': 'HOTEL',
@@ -1181,6 +1181,7 @@ def get_order(request, pnr_id):
                                         'Client' : item.value.get('client')
                                     }
 
+                                # taxi et transfert
                                 if item.designation in ['TAXI','TRANSFERT']:
                                     _ht_details= { 
                                         'Type': 'TAXI' if item.designation == 'TAXI' else 'TRANSFERT' ,
@@ -1191,7 +1192,8 @@ def get_order(request, pnr_id):
                                         'taximan': item.value.get('taximan'),
                                         'passengers' : item.value.get('taxiPassenger')
                                     }
-
+                                
+                                # BUS, TRAIN, TGV
                                 if item.designation in ['BUS','SNCF TGV AIR','TRAIN : SNCF']:
                                     _ht_details= { 
                                         'Type': 'TRAIN : SNCF' if item.designation == 'TRAIN : SNCF' else 'SNCF TGV AIR' if item.designation == 'SNCF TGV AIR' else 'BUS',
@@ -1203,6 +1205,23 @@ def get_order(request, pnr_id):
                                         'passengers': item.value.get('passenger')
                                     }
                                 print(_ht_details)
+
+                                # location de véhicule
+                                if item.designation in ['LOCATION VEH']:
+                                    _ht_details= {
+                                        'Type': 'LOCATION VEHICULE',
+                                        'Fournisseur': item.value.get('fournisseur'),
+                                        'Conducteur': item.value.get('conducteur'),
+                                        'Modele': item.value.get('modele'),
+                                        
+                                        'lieuPrise': item.value.get('lieu_prise'),
+                                        'DatePrise': item.value.get('date_prise'),
+                                        'HeurePrise': item.value.get('heure_prise'),
+
+                                        'lieuReturn': item.value.get('lieu_return'),
+                                        'DateReturn': item.value.get('date_return'),
+                                        'HeureReturn': item.value.get('heure_return'),
+                                    }
 
                             csv_order_lines.append({
                                 'LineID': order.id,
@@ -1655,7 +1674,7 @@ def import_product(request, pnr_id):
             print(product)
             
             # cas pour l'AVOIR COMPAGNIE
-            if product[0] == '19':
+            if product[0] == 19:
                 if float(product[3]) > 0:
                     product[3] = -abs(product[3])
                     
@@ -1671,8 +1690,8 @@ def import_product(request, pnr_id):
                     passenger_segment.save()
 
             # cas pour l'HOTEL et TAXI
-            if product[0] in ['9','10','12','15','14','8']:
-
+            if product[0] in [9,10,12,15,14,8,11]:
+                print('CAS POUR LA LOCATION DE VEHICULE')
                 other_fee = OthersFee(designation=product[2], cost=product[3], tax=product[4], total=product[5],
                                         pnr=pnr, fee_type=product[1], reference=product[7], emitter=emitter,
                                         quantity=1, is_subjected_to_fee=False,creation_date=datetime.now())
@@ -1863,7 +1882,7 @@ def remove_other_fee_service(request):
         return JsonResponse({'status': 'not_found'})
 
 # décommander  un PNR
-@login_required(login_url="index")
+
 def unorder_pnr(request):
     if request.method == 'POST':
         pnr_number = request.POST.get('pnr_number')
@@ -2126,7 +2145,12 @@ def get_service_supplier_list(request):
         for supplier in bus_classes:
             busClass.append({"id":supplier.id,"name":supplier.name})
 
-        context = {"hotel_suppliers":hSupplier,"taxi_suppliers":tSupplier,"bus_classes":busClass}
+        car_suppliers = ServiceSupplier.objects.filter(service__id=11).all()
+        car_supplier = []
+        for supplier in car_suppliers:
+            car_supplier.append({"id":supplier.id,"name":supplier.name})
+
+        context = {"hotel_suppliers":hSupplier,"taxi_suppliers":tSupplier,"car_suppliers":car_supplier}
         return JsonResponse(context)
     
 @login_required(login_url='index')
