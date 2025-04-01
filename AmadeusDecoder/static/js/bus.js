@@ -217,7 +217,7 @@ $(document).ready(function(){
     }
   
     function bsMoveFocus(fromHere, toThere) {
-      var csOptions = document.querySelectorAll('.taxi-supplier-item');
+      var csOptions = document.querySelectorAll('.bus-supplier-item');
       var aOptions = Array.from(csOptions);
       // grab the currently showing options, which might have been filtered
       const bsCurrentOptions = aOptions.filter(function(option) {

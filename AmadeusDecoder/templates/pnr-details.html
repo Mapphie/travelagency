@@ -1026,13 +1026,22 @@
 															
 															{% else %}
 																{% with other_fee.id|get_transport_details as tx_details %}
-																	<p>Trajet : {{ tx_details.trajet }}
-																	{% if tx_details.taximan is not None %}
-																		<br>Chauffeur : {{ tx_details.taximan }}
+																	{% if tx_details.fournisseur is not None %}
+																		<!-- Cas pour la location de véhicule -->
+																		<p>Fournisseur : {{ tx_details.fournisseur }}</p>
+																		<p>Conducteur : {{ tx_details.conducteur }}</p>
+																		<p>Modèle : {{ tx_details.modele }}</p>
+																		<p>Prise du Véhicule : {{ tx_details.lieu_prise }} - {{ tx_details.date_prise }} {{ tx_details.heure_prise }}</p>
+																		<p>Retour du Véhicule : {{ tx_details.lieu_return }} - {{ tx_details.date_return }} {{ tx_details.heure_return }}</p>
+																	{% else %}
+																		<p>Trajet : {{ tx_details.trajet }}
+																		{% if tx_details.taximan is not None %}
+																			<br>Chauffeur : {{ tx_details.taximan }}
+																		{% endif %}
+																		<br>Départ : {{ tx_details.date }} {{ tx_details.departuretime }}
+																		<br>Arrivée :{{ tx_details.date }} {{ tx_details.arrivaltime }}
+																		</p>
 																	{% endif %}
-																	<br>Départ : {{ tx_details.date }} {{ tx_details.departuretime }}
-																	<br>Arrivée :{{ tx_details.date }} {{ tx_details.arrivaltime }}
-																	</p>
 																{% endwith %}
 															{% endif %}
 															
@@ -2739,4 +2748,130 @@
 	</div>
 </div>
 
+<div class="modal fade" id="modalLocationInfo" aria-modal="true" >
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id ="modalLocationTitle">Location de Véhicule</h4>
+				<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">x</span>
+				</button>
+			</div>
+
+			<div class="modal-body">
+
+				<div class="input-group mb-2">
+				
+					<div class="col-md-4"> 
+						<label for="fournisseur_car">Fournisseur</label>
+					</div>
+					<div class="col-md-8"> 
+						<div id='select-location-supplier' class='hidden-visually' aria-live="polite"></div>
+							<div class="locationselect" id="myLocationSupplier">
+								<input type="text" id="location-supplier-input" class="select-css">
+								<span class="custom-select-icons">
+									<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16" focusable="false" aria-hidden="true" id="icon-circle-down" class="icon" role="img">
+										<path d="M16 8c0-4.418-3.582-8-8-8s-8 3.582-8 8 3.582 8 8 8 8-3.582 8-8zM1.5 8c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5-2.91 6.5-6.5 6.5-6.5-2.91-6.5-6.5z"></path>
+										<path d="M4.957 5.543l-1.414 1.414 4.457 4.457 4.457-4.457-1.414-1.414-3.043 3.043z"></path>
+									</svg>
+																	
+								</span>
+								<ul class="location-supplier-options" id="location-supplier-list"></ul>
+							</div>
+					</div>
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-4">
+						<label for="conducteur">Conducteur</label>
+					</div>
+				
+					<div class="col-md-8">
+						<input type="text" class="form-control" id="conducteur" name="time">
+					</div>
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-4">
+						<label for="modele">Modèle</label>
+					</div>
+				
+					<div class="col-md-8">
+						<input type="text" class="form-control" id="modele" name="time">
+					</div>
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-12">
+						<label for="">Prise du véhicule</label>
+					</div>
+					
+				</div>
+
+
+				<div class="input-group mb-2">
+					<div class="col-md-4">
+						<label for="date_prise_car">Date et Heure</label>
+					</div>
+					<div class="col-md-4"> 
+						<input type="date" class="form-control" id="date_prise_car" name="date">
+					</div>
+					<div class="col-md-4">
+						<input type="time" class="form-control" id="time_prise_car" name="time">
+					</div>
+					
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-4"> 
+						<label for="date">Lieu</label>
+					</div>
+					<div class="col-md-8"> 
+						<input type="text" class="form-control" id="lieu_car" name="date">
+					</div>
+					
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-12">
+						<label for="">Restitution du véhicule</label>
+					</div>
+					
+				</div>
+
+
+				<div class="input-group mb-2">
+					<div class="col-md-4">
+						<label for="date_return_car">Date et Heure</label>
+					</div>
+					<div class="col-md-4"> 
+						<input type="date" class="form-control" id="date_return_car" name="date">
+					</div>
+					<div class="col-md-4">
+						<input type="time" class="form-control" id="time_return_car" name="time">
+					</div>
+					
+				</div>
+
+				<div class="input-group mb-2">
+					<div class="col-md-4"> 
+						<label for="date">Lieu</label>
+					</div>
+					<div class="col-md-8"> 
+						<input type="text" class="form-control" id="lieu_return_car" name="date">
+					</div>
+					
+				</div>
+
+				
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+				<button type="button" class="btn btn-success" id="ConfirmAddLocation" data-dismiss="modal">Confirmer
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock content %}
