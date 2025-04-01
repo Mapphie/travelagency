@@ -27,6 +27,10 @@ $('#SelectProduct').on('change', function(){
 
   }
 
+  if (select_product == 11) {
+    $('#modalLocationInfo').modal("show");
+  }
+
 });
 
 $('#modalHotelInfo').on('hidden.bs.modal', function () {

@@ -642,139 +642,92 @@ let SaveProductCounting = 0;
 document
   .getElementById("save-product-select")
   .addEventListener("click", (e) => {
-    ticket = document.getElementById('ticket-avoir').value;
-    console.log('------TICKET ----------------');
+    let ticket = document.getElementById("ticket-avoir").value.trim();
+    let passenger = document.getElementById("select_Passenger").value;
+    let productId = Number(ProductDropdown.value);
+    let designation = ProductDropdown.children[ProductDropdown.selectedIndex].getAttribute("data-designation");
+
+    console.log("------TICKET ----------------");
     console.log(ticket);
-    
-      SaveProductCounting++;
-      let listNewProduct = [];
-      const designation =
-        ProductDropdown.children[ProductDropdown.selectedIndex].getAttribute(
-          "data-designation"
-        );
-      document.querySelector(".tr-add-line").hidden = false;
-      document.getElementById("add-product-service-line").hidden = false;
+    console.log("ProductDropdown.value : ", productId);
 
-      passenger = (document.getElementById('select_Passenger')).value;
-      console.log(ProductDropdown.value);
+    // Affichage des éléments nécessaires
+    document.querySelector(".tr-add-line").hidden = false;
+    document.getElementById("add-product-service-line").hidden = false;
 
-      if (ProductDropdown.value == 19) {
-        if (ticket.trim() !== "") {
-          selectedSegment = document.querySelector('#multipleSelect').getSelectedOptions();
-          console.log(selectedSegment);
-          listNewProduct.push(
-            ProductDropdown.value,
-            ProductTypeInitiale.textContent,
-            designation,
-            parseFloat(ProductTranspInput.value).toFixed(2),
-            (
-              parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
-            ).toFixed(2),
-            ProductpassInput.value,
-            "",
-            ticket,
-            passenger,
-            selectedSegment
-          );
-        }
-        else {
-          toastr.error('Veuillez entrer un Numéro de billet')
-          document.getElementById('ticket-avoir').style.borderColor = 'red';
-        }
-      }
-      console.log('ProductDropdown.value : ',ProductDropdown.value);
-      
-      // Récupération des informations supplémentaires concernant le bus s'il y en a, dans sessionStorage
-      if( [8,9,14].includes(Number(ProductDropdown.value)) && sessionStorage.getItem('bus_details')){
-        bus_details = sessionStorage.getItem('bus_details');
+    SaveProductCounting++;
+    let listNewProduct = [];
+
+    // Fonction pour ajouter un produit dans la liste
+    function addProduct(extraInfo = "") {
         listNewProduct.push(
-          ProductDropdown.value,
-          ProductTypeInitiale.textContent,
-          designation,
-          parseFloat(ProductTranspInput.value).toFixed(2),
-          parseFloat(ProductTaxInput.value).toFixed(2),
-          (
-            parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
-          ).toFixed(2),
-          ProductpassInput.value,
-          "",
-          bus_details
-        );
-      } 
-      
-      // Récupération des informations supplémentaires concernant l'hôtel s'il y en a, dans sessionStorage
-      if(ProductDropdown.value == 10 && sessionStorage.getItem('hotel_info')){
-          hotel_info = sessionStorage.getItem('hotel_info');
-          listNewProduct.push(
-            ProductDropdown.value,
+            productId,
             ProductTypeInitiale.textContent,
             designation,
             parseFloat(ProductTranspInput.value).toFixed(2),
             parseFloat(ProductTaxInput.value).toFixed(2),
-            (
-              parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
-            ).toFixed(2),
+            (parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)).toFixed(2),
             ProductpassInput.value,
             "",
-            hotel_info
-          );
-      }
-
-      // Récupération des informations supplémentaires concernat le taxi s'il y en a, dans sessionStorage
-      if([12,15].includes(Number(ProductDropdown.value)) && sessionStorage.getItem('taxi_details')){
-        taxi_details = sessionStorage.getItem('taxi_details');
-        listNewProduct.push(
-          ProductDropdown.value,
-          ProductTypeInitiale.textContent,
-          designation,
-          parseFloat(ProductTranspInput.value).toFixed(2),
-          parseFloat(ProductTaxInput.value).toFixed(2),
-          (
-            parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
-          ).toFixed(2),
-          ProductpassInput.value,
-          "",
-          taxi_details
+            extraInfo
         );
-      } 
-      else {
-        listNewProduct.push(
-          ProductDropdown.value,
-          ProductTypeInitiale.textContent,
-          designation,
-          parseFloat(ProductTranspInput.value).toFixed(2),
-          parseFloat(ProductTaxInput.value).toFixed(2),
-          (
-            parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)
-          ).toFixed(2),
-          ProductpassInput.value,
-          ""
-        );
-      }
+    }
 
-      $.ajax({
+    // Gestion spécifique des produits
+    if (productId === 19) {
+        if (ticket !== "") {
+            let selectedSegment = document.querySelector("#multipleSelect").getSelectedOptions();
+            console.log(selectedSegment);
+            addProduct(ticket, passenger, selectedSegment);
+        } else {
+            toastr.error("Veuillez entrer un Numéro de billet");
+            document.getElementById("ticket-avoir").style.borderColor = "red";
+            return; // Empêcher la suite si le ticket est vide
+        }
+    }
+
+    // Produits qui nécessitent des infos stockées dans sessionStorage
+    let sessionData = {
+        8: "bus_details",
+        9: "bus_details",
+        14: "bus_details",
+        10: "hotel_info",
+        12: "taxi_details",
+        15: "taxi_details",
+        11: "location_details",
+    };
+
+    if (sessionData[productId] && sessionStorage.getItem(sessionData[productId])) {
+        addProduct(sessionStorage.getItem(sessionData[productId]));
+    }
+
+    // Produits génériques (tous ceux non concernés par les cas ci-dessus)
+    if (![10, 11, 8, 9, 14, 12, 15, 19].includes(productId)) {
+        addProduct();
+    }
+
+    // Envoi des données en AJAX
+    $.ajax({
         type: "POST",
         dataType: "json",
         url: `/home/pnr/${pnrIdNew}/import_product/`,
         data: {
-          csrfmiddlewaretoken: csrftoken,
-          pnrId: pnrIdNew,
-          listNewProduct: JSON.stringify(listNewProduct),
+            csrfmiddlewaretoken: csrftoken,
+            pnrId: pnrIdNew,
+            listNewProduct: JSON.stringify(listNewProduct),
         },
         success: (response) => {
-          console.log(response);
-          location.reload();
-          // supprimer les informations supplémentauires des taxi et hotels dans sessionStorage
-          if(sessionStorage.getItem('taxi_details')){sessionStorage.removeItem('taxi_details');}
-          if(sessionStorage.getItem('hotel_info')){sessionStorage.removeItem('hotel_info');}
-          if(sessionStorage.getItem('bus_details')){sessionStorage.removeItem('bus_details');}
+            console.log(response);
+            location.reload();
+
+            // Suppression des données inutiles dans sessionStorage
+            Object.values(sessionData).forEach((key) => sessionStorage.removeItem(key));
         },
         error: (response) => {
-          console.log(response);
+            console.log(response);
         },
-      });
-    
-      });
+    });
+});
 
 /*
  * =======================  SET A COUNT IF INPUT OF FEES IS CHANGED ===========================*
