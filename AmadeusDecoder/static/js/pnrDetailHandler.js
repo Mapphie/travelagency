@@ -675,15 +675,22 @@ document
 
     // Gestion spécifique des produits
     if (productId === 19) {
-        if (ticket !== "") {
-            let selectedSegment = document.querySelector("#multipleSelect").getSelectedOptions();
-            console.log(selectedSegment);
-            addProduct(ticket, passenger, selectedSegment);
-        } else {
-            toastr.error("Veuillez entrer un Numéro de billet");
-            document.getElementById("ticket-avoir").style.borderColor = "red";
-            return; // Empêcher la suite si le ticket est vide
-        }
+      let selectedSegment = document.querySelector("#multipleSelect").getSelectedOptions();
+      console.log(selectedSegment);
+      console.log('Passenger : ',passenger);
+      
+      // addProduct(ticket, passenger, selectedSegment);
+      listNewProduct.push(
+        productId,
+        ProductTypeInitiale.textContent,
+        designation,
+        parseFloat(ProductTranspInput.value).toFixed(2),
+        parseFloat(ProductTaxInput.value).toFixed(2),
+        (parseFloat(ProductTranspInput.value) + parseFloat(ProductTaxInput.value)).toFixed(2),
+        ticket,
+        passenger,
+        selectedSegment,
+      );
     }
 
     // Produits qui nécessitent des infos stockées dans sessionStorage
