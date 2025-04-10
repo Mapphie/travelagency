@@ -1675,6 +1675,7 @@ def import_product(request, pnr_id):
             
             # cas pour l'AVOIR COMPAGNIE
             if product[0] == 19:
+                passenger = Passenger.objects.get(pk=product[7])
                 if float(product[3]) > 0:
                     product[3] = -abs(product[3])
                     
@@ -1686,7 +1687,6 @@ def import_product(request, pnr_id):
                 for segment in product[8]:
                     if segment:
                         segment = PnrAirSegments.objects.get(pk=segment.get('value'))
-                        passenger = Passenger.objects.get(pk=product[7])
                         passenger_segment = OtherFeeSegment(segment=segment,other_fee= other_fees, passenger=passenger)
                         passenger_segment.save()
 
