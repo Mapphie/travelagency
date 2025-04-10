@@ -190,7 +190,7 @@ def alert_tjq() :
                     </p>
                     <p>
                         <strong>Ceci est un email automatique, merci de ne pas répondre.</strong></br>
-                        Services supports : tahina@phidia.onmicrosoft.com
+                        Services supports : dev@alita.re
                     </p> 
                 </body>
                 </html>
