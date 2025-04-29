@@ -99,6 +99,16 @@ def checking_pnr_not_sent_to_odoo():
     
     # ==================== PNR not sent to Odoo checking ====================
     MailNotification.pnr_not_sent_to_odoo(now)
+
+# ================= PNR remontes par Mme Ioly ======= 29/04/25 =============
+def check_pnr_remonte():
+    from AmadeusDecoder.utilities.MailNotificationParser import MailNotification
+    try:
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+        MailNotification.pnr_remonte(now)
+
+    except Exception as e:
+       print("Erreur lors de l'exécution de pnr_remonte : ", e)
     
 def load_config(configs):
     print('Loading configurations ...')
@@ -169,6 +179,8 @@ class AmadeusdecoderConfig(AppConfig):
         timer_update_check = RepeatTimer(1, checking_pnr_not_sent_to_odoo)
         timer_update_check.start()
         
+        timer_pnr_remonte = RepeatTimer(1, check_pnr_remonte)
+        timer_pnr_remonte.start()
         
         # print('Mail notification is starting....')
         # timer_pnr_misssing = RepeatTimer(1, checking_pnr_missing)
