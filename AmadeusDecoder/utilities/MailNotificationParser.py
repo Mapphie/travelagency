@@ -9,6 +9,12 @@ from AmadeusDecoder.models.invoice.Ticket import Ticket
 from AmadeusDecoder.utilities.SendMail import Sending
 from AmadeusDecoder.utilities.configuration_data import ANOMALY_EMAIL_SENDER
 
+import xlsxwriter
+from tempfile import NamedTemporaryFile
+from email.mime.base import MIMEBase
+from email import encoders
+import os
+
 class MailNotification():
 
     def passenger_segment_missing_notification(time_now):
@@ -182,11 +188,11 @@ class MailNotification():
                 print("Sunday day")
                 weekend_processing_time(180)
         except Exception as e:
-            try:
-                # Sending.send_email_pnr_parsing("Aucun PNR non remonté")
-            except Exception as e:
-                print(f"Error sending pnr not sent to GP : {e}")
-                raise e
+            # try:
+            #     # Sending.send_email_pnr_parsing("Aucun PNR non remonté")
+            # except Exception as e:
+            print(f"Error sending pnr not sent to GP : {e}")
+            raise e
         
     def pnr_not_sent_to_odoo(now):
         dt_now = now
@@ -533,8 +539,8 @@ class MailNotification():
                 """
                 
                 # Envoyer le mail pour toutes les utilisateurs d"Isssoufali 
-                Sending.send_email(
-                    "dev@alita.re",
+                # Sending.send_email(
+                #     "dev@alita.re",
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,  
                     # subject, 
                     # message
@@ -570,8 +576,8 @@ class MailNotification():
                 """
                 
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
-                Sending.send_email(
-                    "dev@alita.re",
+                # Sending.send_email(
+                #     "dev@alita.re",
                     # administrator_users_mail + mgbi_users_mail,  
                 #     subject, 
                 #     message
@@ -618,8 +624,8 @@ class MailNotification():
                 """           
                     
                 # Envoyer le mail pour toutes les utilisateurs d"Isssoufali 
-                Sending.send_email(
-                    "dev@alita.re",
+                # Sending.send_email(
+                #     "dev@alita.re",
                     # administrator_users_mail + other_users_mail + mgbi_users_mail,
                     # subject, 
                     # message
@@ -656,8 +662,8 @@ class MailNotification():
                 """        
                     
                 # Envoyer le mail pour les administrateurs d"Isssoufali 
-                Sending.send_email(
-                    "dev@alita.re",
+                # Sending.send_email(
+                #     "dev@alita.re",
                     # administrator_users_mail + mgbi_users_mail,  
                 #     subject, 
                 #     message
@@ -824,7 +830,7 @@ class MailNotification():
         month = dt_now.month
         year = dt_now.year
         time_now = dt_now.time()
-        time_to_send = time(18, 0, 0)
+        time_to_send = time(15, 0, 0)
         
         dt_to_start_sending_to_odoo = datetime(
                                         day=day, 
@@ -942,7 +948,7 @@ class MailNotification():
                     <html>
                     <body>
                         <p> Bonjour, </p>
-                        <p> Vous trouverez ci-après la liste des pnrs remonté le {dt_now.strftime("%d-%m-%Y")}. </p>
+                        <p> Vous trouverez ci-après la liste des pnrs remontés le {dt_now.strftime("%d-%m-%Y")}. </p>
                         <p> Bonne récéption. </p>
                         <p> Cordialement. </p>
                         <table id="customers" style="border-collapse: collapse;width: 100%;">
