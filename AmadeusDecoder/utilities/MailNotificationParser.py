@@ -836,7 +836,7 @@ class MailNotification():
                                         day=day, 
                                         month=month, 
                                         year=year, 
-                                        hour=8, 
+                                        hour=2, 
                                         minute=0, 
                                         second=0,
                                         tzinfo=timezone.utc
@@ -845,7 +845,7 @@ class MailNotification():
                                         day=day, 
                                         month=month, 
                                         year=year, 
-                                        hour=18, 
+                                        hour=21, 
                                         minute=0, 
                                         second=0,
                                         tzinfo=timezone.utc
@@ -937,6 +937,9 @@ class MailNotification():
             workbook.close()
             return file_path
 
+        print("============== TIME NOW : ", time_now)
+        print("============== TIME TO SEND : ", time_to_send)
+
 
         if time_now == time_to_send: # 18h00
             print("==================== PNR remonte du jour ====================")
@@ -976,7 +979,8 @@ class MailNotification():
                 try:
                     Sending.send_email(
                         "anomalie.issoufali.pnr@gmail.com",
-                        ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","direction@mgbi.mg","dev@mgbi.mg"],
+                        # ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","direction@mgbi.mg","dev@mgbi.mg"],
+                        ["maphie@alita.re","nomena@alita.re"],
                         subject, 
                         message,
                         attachments=[excel_file]
