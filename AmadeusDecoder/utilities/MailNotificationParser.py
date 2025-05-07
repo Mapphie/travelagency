@@ -979,8 +979,8 @@ class MailNotification():
                 try:
                     Sending.send_email(
                         "anomalie.issoufali.pnr@gmail.com",
-                        # ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","direction@mgbi.mg","dev@mgbi.mg"],
-                        ["maphie@alita.re","nomena@alita.re"],
+                        ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","direction@mgbi.mg","dev@mgbi.mg"],
+                        # ["maphie@alita.re","nomena@alita.re"],
                         subject, 
                         message,
                         attachments=[excel_file]
