@@ -4,7 +4,7 @@ from . import views
 from .views import home
 from .views.Dashboard import dashboard
 from .views.Manage_customers import customers, create_customer, modify_customer_info, modify_customer_in_passenger_invoice, delete_customer
-from .views.Manage_users import users, register
+from .views.Manage_users import *
 from .views.Account import account
 from .views.Tools import *
 from .views.Setting import setting
@@ -82,5 +82,12 @@ urlpatterns = [
     path('home/add-service-supplier',add_service_supplier, name='add_service_supplier'),
     path('home/unorder-pnr/add-motif', addMotif,name="add_motif"),
     path('home/pnr/cancel/<int:pnr_id>',cancel_pnr,name="cancel_pnr"),
+    path('user/details/<int:user_id>/',user_details,name='user_details'),
+    path('user/archive',archive_user, name="archive_user"),
+    path('user/reactive',reactive_user, name="reactive_user"),
+    path('user/UpdatePassword',update_password, name='update_password'),
+    path('user/updateInfo',update_info,name='update_info'),
+    path('home/user-research', user_research, name= 'user_research'),
+    path('home/user-filter', user_filter, name= 'user_filter'),
 
 ]

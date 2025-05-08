@@ -44,11 +44,11 @@
                 </div>
 
                 
-            </div><hr>
-            <div class="card-body">
+            </div>
+            <div class="card-body" style="justify-items: center">
                 <div class="card card-primary card-outline px-4 w-50">
                     <div class="box-body box-profile">
-                      <input type="hidden" id="user_id" value="{{user.id}}" />
+                      <input type="hidden" id="user_id" value="{{request.user.id}}" />
                       
                       <ul class="list-group list-group-unbordered">
                         <li class="list-group-item">
@@ -86,16 +86,7 @@
                 
                       <div class="collapse" id="collapseExample">
                         <div class="card card-body">
-                          <label>Mot de passe actuel:</label>
-                          <div class="input-group mb-3">
-                            <input type="password" class="form-control" id="current-password" placeholder="" name="current-password">
-                            <span class="fas fa-eye" id="show-current-password" style="cursor: pointer;"></span>
-                            <div class="input-group-append">
-                              <div class="input-group-text" >
-                                <span class="fas fa-lock"></span>
-                              </div>
-                            </div>
-                          </div>
+                          
                           <label>Nouveau mot de passe:</label>
                           <div class="input-group mb-3">
                             <input type="password" class="form-control" id="new-password" placeholder="" name="new-password">

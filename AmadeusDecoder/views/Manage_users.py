@@ -2,7 +2,7 @@
 Created on 8 Sep 2022
 
 '''
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -12,6 +12,10 @@ from AmadeusDecoder.models.invoice.Ticket import Ticket
 from AmadeusDecoder.models.user.Users import User
 from AmadeusDecoder.models.user.Users import Role
 from AmadeusDecoder.forms import UserForm
+
+from django.http import JsonResponse
+from django.db.models import Q
+
 
 def paginate_queryset(request, queryset, per_page=25):
     """Helper function to paginate any queryset."""
@@ -135,13 +139,16 @@ def update_password(request):
     if request.method != 'POST':
         return JsonResponse({'status': 405, 'message': 'Méthode non autorisée'})
     
-    current_password = request.POST.get('currentPassword')
+    current_user_password = request.POST.get('password')
+    print('CURRENT PASSWORD : ', current_user_password)
     new_password = request.POST.get('newPassword')
+    # the connected user
     user_id = request.POST.get('user_id')
     
     try:
         user = User.objects.get(pk=user_id)
-        user_authenticated = authenticate(request, username=user.email, password=current_password)
+        user_authenticated = authenticate(request, username=user.email, password=current_user_password)
+        print('USER AUTHENTIFICATED : ', user_authenticated)
         
         if user_authenticated is not None:
             user.set_password(new_password)
