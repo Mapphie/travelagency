@@ -58,14 +58,15 @@ def comment(request):
                     </html>
                 """.format(comment_value, pnr_element.number, user_element.username)
 
-    Sending.send_email(
-        "anomalie.issoufali.pnr@gmail.com",
-        [
-            "dev@alita.re",
-        ],
-         subject,
-         message
-    )
+        Sending.send_email(
+            "anomalie.issoufali@alita.re",
+            [
+                "dev@alita.re",
+                "maphie@alita.re"
+            ],
+            subject,
+            message
+        )
 
     return JsonResponse({'comment': 'Data successfully sent to database'})
 
@@ -135,10 +136,11 @@ def comment_detail(request, comment_id):
                     """.format(comments.comment, comments.pnr_id.number, comments.user_id.username, comment_response)
 
             Sending.send_email(
-                "anomalie.issoufali.pnr@gmail.com",
+                "anomalie.issoufali@alita.re",
                 [   
                     comments.user_id.email,
                     "dev@alita.re",
+                    "maphie@alita.re"
                 ],
                 subject,
                 message
@@ -163,11 +165,17 @@ def update_comment_state(request):
 
 @login_required(login_url='index')
 def get_pnr_not_fetched(request):
+    print("PNR NON REMONTE")
     if request.method == 'POST':
         if 'pnrNumber' in request.POST:
+            print("pnrNumber is in request POST")
             pnr_number = request.POST.get('pnrNumber')
+            print(pnr_number)
+            print(pnr_number != '' and pnr_number != None)
+            print(NotFetched.objects.filter(pnr_number=pnr_number).exists())
             user_follower = request.user.id
             if pnr_number != '' and pnr_number != None and not NotFetched.objects.filter(pnr_number=pnr_number).exists():
+                print("We can send the mail")
                 follower = User.objects.get(pk=int(user_follower))
                 pnr_not_fetched = NotFetched(pnr_number=pnr_number, follower=follower)
                 pnr_not_fetched.save()
@@ -195,14 +203,15 @@ def get_pnr_not_fetched(request):
                             </html>
                         """.format(pnr.pnr_number, pnr.follower.username)
 
-            Sending.send_email_pnr_not_fetched(
-                "anomalie.issoufali.pnr@gmail.com",
-                [
-                    "dev@alita.re",
-                ],
-                subject,
-                message
-            )
+                Sending.send_email_pnr_not_fetched(
+                    "anomalie.issoufali@alita.re",
+                    [
+                        "dev@alita.re",
+                        "maphie@alita.re"
+                    ],
+                    subject,
+                    message
+                )
     return JsonResponse({})
 
 # ----------------- anomalie: réponse automatique -----------------

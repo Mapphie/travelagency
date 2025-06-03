@@ -937,8 +937,6 @@ class MailNotification():
             workbook.close()
             return file_path
 
-        print("============== TIME NOW : ", time_now)
-        print("============== TIME TO SEND : ", time_to_send)
 
 
         if time_now == time_to_send: # 18h00
@@ -978,8 +976,8 @@ class MailNotification():
                 # Envoyer le mail pour toutes les utilisateurs d"Isssoufali 
                 try:
                     Sending.send_email(
-                        "anomalie.issoufali.pnr@gmail.com",
-                        ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","direction@mgbi.mg","dev@mgbi.mg"],
+                        "anomalie.issoufali@alita.re",
+                        ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","direction@mgbi.mg","dev@alita.re"],
                         # ["maphie@alita.re","nomena@alita.re"],
                         subject, 
                         message,
