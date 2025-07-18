@@ -977,7 +977,7 @@ class MailNotification():
                 try:
                     Sending.send_email(
                         "anomalie.issoufali@alita.re",
-                        ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","direction@mgbi.mg","dev@alita.re"],
+                        ["asmakalfane@agences-issoufali.com","david.domitin@agences-issoufali.com","pp@alita.re","jeanmichael@alita.re","dev@alita.re"],
                         # ["maphie@alita.re","nomena@alita.re"],
                         subject, 
                         message,
