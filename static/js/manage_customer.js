@@ -400,7 +400,7 @@ function updateCustomerTable(customers,total_results) {
   document.querySelector(".tbody-customer-search-results").innerHTML = "";
 
   $("#all-customer").hide(); 
-  $("#customer-search-results").show(); 
+  $("#customer-search-results").removeAttr('hidden').show(); 
   $('.info-footer-pnr').hide();
   $('#SearchPaginatorSection').removeAttr('hidden').show();
   // $('.total-results-display').removeAttr('hidden').show();

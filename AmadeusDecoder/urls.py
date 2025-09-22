@@ -3,7 +3,7 @@ from . import views
 
 from .views import home
 from .views.Dashboard import dashboard
-from .views.Manage_customers import customers, create_customer, modify_customer_info, modify_customer_in_passenger_invoice, delete_customer
+from .views.Manage_customers import *
 from .views.Manage_users import *
 from .views.Account import account
 from .views.Tools import *
@@ -89,5 +89,8 @@ urlpatterns = [
     path('user/updateInfo',update_info,name='update_info'),
     path('home/user-research', user_research, name= 'user_research'),
     path('home/user-filter', user_filter, name= 'user_filter'),
+    path('customer/details/<int:customer_id>',customer_details,name="customer_details"),
+    path('customer/updateInfo',modify_customer,name='modify_customer'),
+    path('customer-search/',search_customers,name='search_customers'),
 
 ]
