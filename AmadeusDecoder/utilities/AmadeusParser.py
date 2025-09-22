@@ -196,8 +196,8 @@ class AmadeusParser(PnrOnlyParser, TicketOnlyParser, PnrCostParser, EMDOnlyParse
                                     error_file.write('File (PNR Altea) with error: {} \n'.format(str(temp.get_path())))
                                     traceback.print_exc(file=error_file)
                                     error_file.write('\n')
-                                if (str(e) == "connection already closed"):
-                                    Sending.send_email_pnr_parsing(temp.get_path())
+                                # if (str(e) == "connection already closed"):
+                                #     Sending.send_email_pnr_parsing(temp.get_path())
                                 continue
                         if contents[j].startswith('VOTRE NUMERO DE DOSSIER'):
                             try:
@@ -211,8 +211,8 @@ class AmadeusParser(PnrOnlyParser, TicketOnlyParser, PnrCostParser, EMDOnlyParse
                                     error_file.write('File (TST) with error: {} \n'.format(str(temp.get_path())))
                                     traceback.print_exc(file=error_file)
                                     error_file.write('\n')
-                                if (str(e) == "connection already closed"):
-                                    Sending.send_email_pnr_parsing(temp.get_path())
+                                # if (str(e) == "connection already closed"):
+                                #     Sending.send_email_pnr_parsing(temp.get_path())
                                 continue
                         if contents[j].startswith('EMD'):
                             try:
@@ -225,8 +225,8 @@ class AmadeusParser(PnrOnlyParser, TicketOnlyParser, PnrCostParser, EMDOnlyParse
                                     error_file.write('File (EMD) with error: {} \n'.format(str(temp.get_path())))
                                     traceback.print_exc(file=error_file)
                                     error_file.write('\n')
-                                if (str(e) == "connection already closed"):
-                                    Sending.send_email_pnr_parsing(temp.get_path())
+                                # if (str(e) == "connection already closed"):
+                                #     Sending.send_email_pnr_parsing(temp.get_path())
                                 continue
                         if contents[j].startswith('TKT'):
                             try:
@@ -239,8 +239,8 @@ class AmadeusParser(PnrOnlyParser, TicketOnlyParser, PnrCostParser, EMDOnlyParse
                                     error_file.write('File (Ticket) with error: {} \n'.format(str(temp.get_path())))
                                     traceback.print_exc(file=error_file)
                                     error_file.write('\n')
-                                if (str(e) == "connection already closed"):
-                                    Sending.send_email_pnr_parsing(temp.get_path())
+                                # if (str(e) == "connection already closed"):
+                                #     Sending.send_email_pnr_parsing(temp.get_path())
                                 continue
                         if contents[j].startswith('TST'):
                             try:
@@ -253,8 +253,8 @@ class AmadeusParser(PnrOnlyParser, TicketOnlyParser, PnrCostParser, EMDOnlyParse
                                     error_file.write('File (TST) with error: {} \n'.format(str(temp.get_path())))
                                     traceback.print_exc(file=error_file)
                                     error_file.write('\n')
-                                if (str(e) == "connection already closed"):
-                                    Sending.send_email_pnr_parsing(temp.get_path())
+                                # if (str(e) == "connection already closed"):
+                                #     Sending.send_email_pnr_parsing(temp.get_path())
                                 continue
                         if contents[j].startswith('FEE MODIFY REQUEST'):
                             try:
@@ -267,8 +267,8 @@ class AmadeusParser(PnrOnlyParser, TicketOnlyParser, PnrCostParser, EMDOnlyParse
                                     error_file.write('File (REQUEST) with error: {} \n'.format(str(temp.get_path())))
                                     traceback.print_exc(file=error_file)
                                     error_file.write('\n')
-                                if (str(e) == "connection already closed"):
-                                    Sending.send_email_pnr_parsing(temp.get_path())
+                                # if (str(e) == "connection already closed"):
+                                #     Sending.send_email_pnr_parsing(temp.get_path())
                                 continue
                         
     
