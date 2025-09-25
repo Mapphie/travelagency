@@ -1187,16 +1187,6 @@ $(document).ready(function () {
   });
 });
 
-// Search function for customers list
-$(document).ready(function () {
-  $("#input-customer").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-
-    $("tr.client-list").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-    });
-  });
-});
 
 //filter table function
 $("select#sort-status").change(function () {

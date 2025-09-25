@@ -172,7 +172,7 @@ def delete_customer(request, pnr_id):
 @login_required(login_url='index')
 def customers(request):  
     context = {}
-    context['clients'] = Client.objects.all()
+    context['clients'] = Client.objects.all().order_by('intitule')
     pnr_not_invoiced = get_pnr_created_today_not_invoiced(request)
     context['pnr_not_invoiced'] = pnr_not_invoiced
     context['notif_number'] = len(pnr_not_invoiced)
@@ -189,8 +189,9 @@ def customers(request):
         page_obj = paginator.page(paginator.num_pages)
     context['page_obj'] =  page_obj
     context['row_num'] =  row_num
+    context['pnr_count'] = paginator.count
 
-    return render(request,'manage_customers.html', context)    
+    return render(request,'manage_customers.html', context)       
 
 # ------- Notification ---------------------------------
 def get_pnr_created_today_not_invoiced(request):
