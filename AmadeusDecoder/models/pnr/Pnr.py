@@ -139,30 +139,71 @@ class Pnr(models.Model, BaseModel):
     def get_emit_agent(self):
         from AmadeusDecoder.models.user.Users import User
         try:
-            issuing_user = User.objects.filter(copied_documents__document=self.number).order_by('copied_documents__id').last()
+            # 1. Essayer via copied_documents (prioritaire)
+            issuing_user = User.objects.filter(
+                copied_documents__document=self.number
+            ).order_by('copied_documents__id').last()
             if issuing_user is not None:
                 return issuing_user
-            elif issuing_user is None and self.agent is not None:
+
+            # 2. Sinon, utiliser l'agent direct du PNR
+            if self.agent is not None:
                 return self.agent
-            else:
-                issuing_user = User.objects.filter(
-                    (Q(emitted_other_fees__pnr=self) & (Q(emitted_other_fees__other_fee_status=1) | Q(emitted_other_fees__is_invoiced=True)))
-                    | (Q(emitted_tickets__pnr=self) & (Q(emitted_tickets__ticket_status=1) | Q(emitted_tickets__is_invoiced=True)))
-                ).order_by('id').last()
-                if issuing_user is None:
-                    issuing_user_other_fee = OthersFee.objects.filter(Q(pnr=self) & (Q(other_fee_status=1) | Q(is_invoiced=True))).exclude(issuing_agent_name=None).last()
-                    issuing_user_ticket= Ticket.objects.filter(Q(pnr=self) & (Q(ticket_status=1) | Q(is_invoiced=True))).exclude(issuing_agent_name=None).last()
-                    if issuing_user_other_fee is not None:
-                        return issuing_user_other_fee.issuing_agent_name
-                    elif issuing_user_ticket is not None:
-                        return issuing_user_ticket.issuing_agent_name
-                    else:
-                        return None
-                else:
-                    return issuing_user
+
+            # 3. Sinon, chercher parmi les émetteurs de tickets/frais liés à ce PNR
+            #    → Utilisation de sous-requêtes pour éviter les JOIN coûteux
+            ticket_emitters = Ticket.objects.filter(
+                pnr=self,
+                ticket_status=1
+            ).values_list('emitter_id', flat=True)
+
+            ticket_emitters_invoiced = Ticket.objects.filter(
+                pnr=self,
+                is_invoiced=True
+            ).values_list('emitter_id', flat=True)
+
+            other_fee_emitters = OthersFee.objects.filter(
+                pnr=self,
+                other_fee_status=1
+            ).values_list('emitter_id', flat=True)
+
+            other_fee_emitters_invoiced = OthersFee.objects.filter(
+                pnr=self,
+                is_invoiced=True
+            ).values_list('emitter_id', flat=True)
+
+            # Combiner tous les IDs d'émetteurs potentiels
+            emitter_ids = set(ticket_emitters) | set(ticket_emitters_invoiced) | \
+                        set(other_fee_emitters) | set(other_fee_emitters_invoiced)
+
+            if emitter_ids:
+                # Récupérer le dernier utilisateur (par ID le plus élevé)
+                return User.objects.filter(id__in=emitter_ids).order_by('-id').first()
+
+            # 4. Dernier recours : utiliser les noms d'agents stockés en texte
+            issuing_user_other_fee = OthersFee.objects.filter(
+                pnr=self,
+                other_fee_status=1
+            ).exclude(issuing_agent_name__isnull=True).exclude(issuing_agent_name='').last()
+
+            if issuing_user_other_fee is not None:
+                return issuing_user_other_fee.issuing_agent_name
+
+            issuing_user_ticket = Ticket.objects.filter(
+                pnr=self,
+                ticket_status=1
+            ).exclude(issuing_agent_name__isnull=True).exclude(issuing_agent_name='').last()
+
+            if issuing_user_ticket is not None:
+                return issuing_user_ticket.issuing_agent_name
+
+            # Aucun émetteur trouvé
+            return None
+
         except Exception as e:
             traceback.print_exc()
             print(e)
+            return None
             
     # get pnr creator agent
     def get_creator_agent(self):

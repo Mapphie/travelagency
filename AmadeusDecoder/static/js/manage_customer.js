@@ -539,6 +539,7 @@ function updatePagination(data) {
 $(document).ready(function () {
     $("#input-customer").on("keyup", function () {
         var value = $(this).val().toLowerCase();
+        console.log("KEY SEARCH : ", value);
         
         // Appelez la fonction de recherche côté serveur
         searchCustomers(value);
