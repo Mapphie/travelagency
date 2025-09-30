@@ -659,6 +659,7 @@ $(function () {
   const $pnrMenu = $(".pnr-menu");
   const $pnrStatus = $(".pnr-status");
   const $dateRangeMenu = $(".date-range-menu");
+  const $dateIssueMenu = $(".date-issue-menu");
   const $creatorMenu = $(".creator-group-menu");
   const $agencyMenu = $(".agency-list-menu");
   const liElements = $(".filter-menu > .list");
@@ -669,6 +670,7 @@ $(function () {
   $pnrMenu.hide();
   $pnrStatus.hide();
   $dateRangeMenu.hide();
+  $dateIssueMenu.hide();
   $creatorMenu.hide();
   $agencyMenu.hide();
 
@@ -680,6 +682,7 @@ $(function () {
     $pnrMenu.hide();
     $pnrStatus.hide();
     $dateRangeMenu.hide();
+    $dateIssueMenu.hide();
     $creatorMenu.hide();
     $agencyMenu.hide();
   })
@@ -696,6 +699,7 @@ $(function () {
     $pnrMenu.hide();
     $pnrStatus.hide();
     $dateRangeMenu.hide();
+    $dateIssueMenu.hide();
     $creatorMenu.hide();
     $agencyMenu.hide();
   });
@@ -706,19 +710,20 @@ $(function () {
     // Vérifie si la variable isMenuOpen est définie et est de type boolean
     if (typeof isMenuOpen === 'boolean') {
       // Vérifie si le menu est ouvert (isMenuOpen est true) et si l'élément cliqué se trouve en dehors du menu
-      if (isMenuOpen && !event.target.closest("#buttonMenuFilter, .wrapper-menu-filter, .pnr-menu, .pnr-status, .date-range-menu, .creator-group-menu, .filter-menu > .list, .pnr-menu .pnr-list, .pnr-status .pnr-list, #reportrange, .daterangepicker, .next, .prev, .creator-group-menu, .agency-list, .agency-list-menu.absolute")) {
+      if (isMenuOpen && !event.target.closest("#buttonMenuFilter, .wrapper-menu-filter, .pnr-menu, .pnr-status, .date-range-menu, .date-issue-menu, .creator-group-menu, .filter-menu > .list, .pnr-menu .pnr-list, .pnr-status .pnr-list, #reportrange, .daterangepicker, .next, .prev, .creator-group-menu, .agency-list, .agency-list-menu.absolute")) {
         // Si les conditions sont remplies, cela signifie que vous avez cliqué en dehors du menu, donc le menu doit être fermé
 
         // Inverse la valeur de isMenuOpen (true devient false, et vice versa)
         isMenuOpen = !isMenuOpen;
 
         // Vérifie si les variables sont définies avant de les utiliser
-        if ($wrapperMenuFilter && $pnrMenu && $pnrStatus && $dateRangeMenu && $creatorMenu && $agencyMenu) {
+        if ($wrapperMenuFilter && $pnrMenu && $pnrStatus && $dateRangeMenu && $dateIssueMenu && $creatorMenu && $agencyMenu) {
           // Masque les éléments suivants pour les rendre invisibles sur la page
           $wrapperMenuFilter.hide();
           $pnrMenu.hide();
           $pnrStatus.hide();
           $dateRangeMenu.hide();
+          $dateIssueMenu.hide();
           $creatorMenu.hide();
           $agencyMenu.hide();
         } else {
@@ -739,6 +744,7 @@ $(function () {
     if (this.classList.contains("list-one")) {
       $pnrMenu.show();
       $dateRangeMenu.hide();
+      $dateIssueMenu.hide();
       $creatorMenu.hide();
       $pnrStatus.hide();
       $agencyMenu.hide();
@@ -746,6 +752,7 @@ $(function () {
 
     if (this.classList.contains("list-two")) {
       $dateRangeMenu.show();
+      $dateIssueMenu.hide();
       $pnrMenu.hide();
       $creatorMenu.hide();
       $pnrStatus.hide();
@@ -754,6 +761,7 @@ $(function () {
 
     if (this.classList.contains("list-three")) {
       $dateRangeMenu.hide();
+      $dateIssueMenu.hide();
       $pnrMenu.hide();
       $creatorMenu.show();
       $pnrStatus.hide();
@@ -762,6 +770,7 @@ $(function () {
 
     if (this.classList.contains("list-four")) {
       $dateRangeMenu.hide();
+      $dateIssueMenu.hide();
       $pnrMenu.hide();
       $creatorMenu.hide();
       $pnrStatus.show();
@@ -770,10 +779,20 @@ $(function () {
 
     if (this.classList.contains("list-six")) {
       $dateRangeMenu.hide();
+      $dateIssueMenu.hide();
       $pnrMenu.hide();
       $creatorMenu.hide();
       $pnrStatus.hide();
       $agencyMenu.show();
+    }
+
+    if (this.classList.contains("list-seven")) {
+      $dateRangeMenu.hide();
+      $dateIssueMenu.show();
+      $pnrMenu.hide();
+      $creatorMenu.hide();
+      $pnrStatus.hide();
+      $agencyMenu.hide();
     }
 
     this.classList.add("active");
